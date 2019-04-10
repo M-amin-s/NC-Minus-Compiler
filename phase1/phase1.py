@@ -7,20 +7,72 @@ with open("test.txt") as f:
         print("Read a character:", c)
 
 
+def is_keyword(str):
+    if (str == 'if' or str == 'else' or str == 'void' or str == 'int' or str == 'while'
+            or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
+            or str == 'case' or str == 'return'):
+        return True
+    else:
+        return False
+
+
+def is_comment(str):
+    return True
+
+
+def is_symbol(str):
+    return True
+
+
+def is_num(str):
+    ans = False
+    for c in str:
+        if c.isdigit():
+            ans = True
+        else:
+            ans = False
+            break
+    return ans
+
+
+def is_id(str):
+    state = 0
+    for c in str:
+        if state == 0 and c.isalpha():
+            state = 1
+        if state == 0 and c.isdigit():
+            state = 2
+            break
+        if state == 1 and c.isdigit():
+            state = 1
+        if state == 1 and c.isalpha():
+            state = 2
+            break
+    if state == 1:
+        return True
+    if state == 2:
+        return False
+
+
+def is_whitespace(str):
+    return True
+
+
 def check_language(state):
-    if (is_comment(state)):
+    if is_comment(state):
         return 5
-    if (is_keyword(state)):
+    elif is_keyword(state):
         return 3
-    if (is_symbol(state)):
+    elif is_symbol(state):
         return 4
-    if (is_num(state)):
+    elif is_num(state):
         return 1
-    if (is_id(state)):
+    elif is_id(state):
         return 2
-    if (is_white_space(state)):
+    elif is_whitespace(state):
         return 6
     return 0
+
 
 def get_next_token(file, start_char):
     state = "" + start_char
