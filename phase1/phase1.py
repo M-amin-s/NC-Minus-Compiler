@@ -21,7 +21,13 @@ def is_comment(str):
 
 
 def is_symbol(str):
-    return True
+    if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']'
+            or str == '(' or str == ')' or str == '{' or str == '}'
+            or str == '+' or str == '-' or str == '*' or str == '='
+            or str == '<' or str == '=='):
+        return True
+    else:
+        return False
 
 
 def is_num(str):
@@ -55,7 +61,11 @@ def is_id(str):
 
 
 def is_whitespace(str):
-    return True
+    if (ord(str) == 32 or ord(str) == 10 or ord(str) == 13
+            or ord(str) == 9 or ord(str) == 11 or ord(str) == 12):
+        return True
+    else:
+        return False
 
 
 def check_language(state):
