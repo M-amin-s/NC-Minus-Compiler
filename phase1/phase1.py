@@ -154,21 +154,34 @@ with open("test.txt") as f:
     start_char = ''
     token_type = 0
     line_num = 1
-    f_out_results.write("1. ")
-    f_out_errors.write("1. ")
+    is_in_first_of_line_results = True
+    is_in_first_of_line_errors = True
+    is_started_results = False
+    is_started_errors = False
     eof = False
     while not eof:
         string, token_type, start_char, eof = get_next_token(f, start_char)
         if token_type != 0 and token_type != 6 and token_type != 5:
+            if is_in_first_of_line_results:
+                if is_started_results:
+                    f_out_results.write("\n")
+                f_out_results.write("%d. (%s, %s) " % (line_num, types[token_type], string))
+                is_started_results = True
+                is_in_first_of_line_results = False
             f_out_results.write("(%s, %s) " % (types[token_type], string))
+        elif token_type == 0:
+            if is_in_first_of_line_errors:
+                if is_started_errors:
+                    f_out_errors.write("\n")
+                f_out_errors.write("%d. (%s, invalid input) " % (line_num, string))
+                is_started_errors = True
+                is_in_first_of_line_errors = False
+            f_out_errors.write("(%s, invalid input) " % string)
         elif token_type == 6 and ord(string[0]) == 10:
             line_num += 1
-            f_out_results.write("\n%d. " % line_num)
-            f_out_errors.write("\n%d. " % line_num)
-        elif token_type == 0:
-            f_out_errors.write("(%s, invalid input) " % string)
+            is_in_first_of_line_errors = True
+            is_in_first_of_line_results = True
 f.close()
 f_out_errors.close()
 f_out_results.close()
-# TODO: not write line number if there is nothing in a line
 # TODO: handle errors better
