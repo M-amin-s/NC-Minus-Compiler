@@ -119,4 +119,4 @@ with open("test1.txt") as f:
         print(string)
         print(token_type)
 
-# TODO: RESULT FILE AND ERROR AND CALL GET_NEXT_TOKEN
+# TODO: RESULT FILE AND ERROR
