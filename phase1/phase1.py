@@ -8,7 +8,7 @@ def is_keyword(str):
 
 
 def is_comment(str):
-    return True
+    return False
 
 
 def is_symbol(str):
@@ -59,6 +59,8 @@ def is_whitespace(str):
 
 
 def check_language(str):
+    if len(str) == 0:
+        return 0
     if is_comment(str):
         return 5
     elif is_keyword(str):
@@ -74,30 +76,36 @@ def check_language(str):
     return 0
 
 
-def get_next_token(file, start_char, string):
-    string = string + start_char
+def get_next_token(file, start_char):
+    string = '' + start_char
     token_type = 0
     end_char = ""
     while True:
         c = file.read(1)
+        token_type = check_language(string)
         if not c:
-            token_type = 7
+            token_type_next = 7
         else:
             token_type_next = check_language(string + c)
-            token_type = check_language(string)
-            if token_type_next == 0:
-                end_char = c
-                break
-    return string, token_type, end_char
+        string = string + c
+        print(token_type)
+        print(token_type_next)
+        print('k')
+        if token_type_next == 0 or token_type_next == 7:
+            end_char = c
+            break
+    eof = token_type_next == 7
+    return string, token_type, end_char, eof
 
 
-# with open("test1.txt") as f:
-#     start_char = ''
-#     string = ""
-#     while True:
-#         string, token_type, start_char = get_next_token(f, start_char, string)
-#         print(string)
-#         print(token_type)
+with open("test1.txt") as f:
+    start_char = ''
+    token_type = 0
+    eof = False
+    while not eof:
+        string, token_type, start_char, eof = get_next_token(f, start_char)
+        # print(string)
+        # print(token_type)
 
 
 # TODO: RESULT FILE AND ERROR AND CALL GET_NEXT_TOKEN
