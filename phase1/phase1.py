@@ -145,43 +145,67 @@ def get_next_token(file, start_char):
     return string, m_token_type, end_char, eof
 
 
+line_num = 1
+is_in_first_of_line_results = True
+is_in_first_of_line_errors = True
+is_started_results = False
+is_started_errors = False
+
+
+def write_token_in_file(write_token_type, write_string):
+    global line_num
+    global is_in_first_of_line_errors
+    global is_in_first_of_line_results
+    global is_started_results
+    global is_started_errors
+    if write_token_type == 0:
+        if is_in_first_of_line_errors:
+            if is_started_errors:
+                f_out_errors.write("\n")
+            f_out_errors.write("%d. (%s, invalid input) " % (line_num, write_string))
+            is_started_errors = True
+            is_in_first_of_line_errors = False
+        else:
+            f_out_errors.write("(%s, invalid input) " % write_string)
+    elif write_token_type != 0 and write_token_type != 6 and write_token_type != 5:
+        if is_in_first_of_line_results:
+            if is_started_results:
+                f_out_results.write("\n")
+            f_out_results.write("%d. (%s, %s) " % (line_num, types[write_token_type], write_string))
+            is_started_results = True
+            is_in_first_of_line_results = False
+        else:
+            f_out_results.write("(%s, %s) " % (types[write_token_type], write_string))
+    elif write_token_type == 6 and ord(write_string[0]) == 10:
+        line_num += 1
+        is_in_first_of_line_errors = True
+        is_in_first_of_line_results = True
+
+
 types = ["NOT A TYPE", "NUM", "ID", "KEYWORD", "SYMBOL", "COMMENT", "WHITESPACE"]
 primaries = [7, 4, 5, 2, 3, 1, 6]
 f_out_results = open("scanner.txt", "w+")
 f_out_errors = open("lexical_errors.txt", "w+")
-# print(is_comment("/* comment */"))
 with open("test.txt") as f:
     start_char = ''
     token_type = 0
-    line_num = 1
-    is_in_first_of_line_results = True
-    is_in_first_of_line_errors = True
-    is_started_results = False
-    is_started_errors = False
+    last_token_type = 0
+    last_token_string = ""
+    string = ""
+    is_started = False
     eof = False
     while not eof:
+        last_token_string = string
+        last_token_type = token_type
         string, token_type, start_char, eof = get_next_token(f, start_char)
-        if token_type != 0 and token_type != 6 and token_type != 5:
-            if is_in_first_of_line_results:
-                if is_started_results:
-                    f_out_results.write("\n")
-                f_out_results.write("%d. (%s, %s) " % (line_num, types[token_type], string))
-                is_started_results = True
-                is_in_first_of_line_results = False
-            f_out_results.write("(%s, %s) " % (types[token_type], string))
-        elif token_type == 0:
-            if is_in_first_of_line_errors:
-                if is_started_errors:
-                    f_out_errors.write("\n")
-                f_out_errors.write("%d. (%s, invalid input) " % (line_num, string))
-                is_started_errors = True
-                is_in_first_of_line_errors = False
-            f_out_errors.write("(%s, invalid input) " % string)
-        elif token_type == 6 and ord(string[0]) == 10:
-            line_num += 1
-            is_in_first_of_line_errors = True
-            is_in_first_of_line_results = True
+        if token_type == 0 and last_token_type != 6:
+            last_token_string += string
+            last_token_type = 0
+            string, token_type, start_char, eof = get_next_token(f, start_char)
+        if is_started:
+            write_token_in_file(last_token_type, last_token_string)
+        is_started = True
+    write_token_in_file(token_type, string)
 f.close()
 f_out_errors.close()
 f_out_results.close()
-# TODO: handle errors better
