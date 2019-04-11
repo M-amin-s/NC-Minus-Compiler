@@ -1,12 +1,3 @@
-with open("test.txt") as f:
-    while True:
-        c = f.read(1)
-        if not c:
-            print("End of file")
-            break
-        print("Read a character:", c)
-
-
 def is_keyword(str):
     if (str == 'if' or str == 'else' or str == 'void' or str == 'int' or str == 'while'
             or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
@@ -45,18 +36,17 @@ def is_id(str):
     state = 0
     for c in str:
         if state == 0 and c.isalpha():
-            state = 1
+            state = 2
         if state == 0 and c.isdigit():
-            state = 2
-            break
-        if state == 1 and c.isdigit():
             state = 1
-        if state == 1 and c.isalpha():
-            state = 2
             break
-    if state == 1:
+        if state == 2 and c.isdigit():
+            state = 3
+        if state == 3 and c.isalpha():
+            state = 1
+    if state == 2 or state == 3:
         return True
-    if state == 2:
+    else:
         return False
 
 
@@ -68,33 +58,46 @@ def is_whitespace(str):
         return False
 
 
-def check_language(state):
-    if is_comment(state):
+def check_language(str):
+    if is_comment(str):
         return 5
-    elif is_keyword(state):
+    elif is_keyword(str):
         return 3
-    elif is_symbol(state):
+    elif is_symbol(str):
         return 4
-    elif is_num(state):
+    elif is_num(str):
         return 1
-    elif is_id(state):
+    elif is_id(str):
         return 2
-    elif is_whitespace(state):
+    elif is_whitespace(str):
         return 6
     return 0
 
 
-def get_next_token(file, start_char):
-    state = "" + start_char
+def get_next_token(file, start_char, string):
+    string = string + start_char
     token_type = 0
     end_char = ""
     while True:
         c = file.read(1)
-        token_type_next = check_language(state + c)
-        if token_type == 0:
-            end_char = c
-            break
-        token_type = token_type_next
-    return state, token_type, end_char
+        if not c:
+            token_type = 7
+        else:
+            token_type_next = check_language(string + c)
+            token_type = check_language(string)
+            if token_type_next == 0:
+                end_char = c
+                break
+    return string, token_type, end_char
+
+
+# with open("test1.txt") as f:
+#     start_char = ''
+#     string = ""
+#     while True:
+#         string, token_type, start_char = get_next_token(f, start_char, string)
+#         print(string)
+#         print(token_type)
+
 
 # TODO: RESULT FILE AND ERROR AND CALL GET_NEXT_TOKEN
