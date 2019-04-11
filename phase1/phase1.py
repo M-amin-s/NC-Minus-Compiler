@@ -50,9 +50,22 @@ def is_id(str):
         return False
 
 
+def is_char_whitespace(char):
+    if (ord(char) == 32 or ord(char) == 10 or ord(char) == 13
+            or ord(char) == 9 or ord(char) == 11 or ord(char) == 12):
+        return True
+    else:
+        return False
+
+
 def is_whitespace(str):
-    if (ord(str) == 32 or ord(str) == 10 or ord(str) == 13
-            or ord(str) == 9 or ord(str) == 11 or ord(str) == 12):
+    state = 0
+    for c in str:
+        if state == 0 and is_char_whitespace(c):
+            state = 1
+        if state == 1 and not is_char_whitespace(c):
+            state = 0
+    if state == 1:
         return True
     else:
         return False
@@ -78,19 +91,18 @@ def check_language(str):
 
 def get_next_token(file, start_char):
     string = '' + start_char
+    next_string = string
     token_type = 0
     end_char = ""
     while True:
+        string = next_string
         c = file.read(1)
+        next_string = string + c
         token_type = check_language(string)
         if not c:
             token_type_next = 7
         else:
-            token_type_next = check_language(string + c)
-        string = string + c
-        print(token_type)
-        print(token_type_next)
-        print('k')
+            token_type_next = check_language(next_string)
         if token_type_next == 0 or token_type_next == 7:
             end_char = c
             break
@@ -104,8 +116,7 @@ with open("test1.txt") as f:
     eof = False
     while not eof:
         string, token_type, start_char, eof = get_next_token(f, start_char)
-        # print(string)
-        # print(token_type)
-
+        print(string)
+        print(token_type)
 
 # TODO: RESULT FILE AND ERROR AND CALL GET_NEXT_TOKEN
