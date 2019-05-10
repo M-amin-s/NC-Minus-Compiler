@@ -1,7 +1,7 @@
 def is_keyword(str):
     if (str == 'if' or str == 'else' or str == 'void' or str == 'int' or str == 'while'
-        or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
-        or str == 'case' or str == 'return'):
+            or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
+            or str == 'case' or str == 'return'):
         return True
     else:
         return False
@@ -41,9 +41,9 @@ def is_comment(str):
 
 def is_symbol(str):
     if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']'
-        or str == '(' or str == ')' or str == '{' or str == '}'
-        or str == '+' or str == '-' or str == '*' or str == '='
-        or str == '<' or str == '=='):
+            or str == '(' or str == ')' or str == '{' or str == '}'
+            or str == '+' or str == '-' or str == '*' or str == '='
+            or str == '<' or str == '=='):
         return True
     else:
         return False
@@ -82,7 +82,7 @@ def is_id(str):
 
 def is_char_whitespace(char):
     if (ord(char) == 32 or ord(char) == 10 or ord(char) == 13
-        or ord(char) == 9 or ord(char) == 11 or ord(char) == 12):
+            or ord(char) == 9 or ord(char) == 11 or ord(char) == 12):
         return True
     else:
         return False
