@@ -1,0 +1,42 @@
+1. program -> declaration-list EOF
+2. declaration-list -> declaration declaration-list | e
+3. declaration -> var-declaration | fun-declaration
+4. var-declaration -> type-specifier ID var-declaration-1
+4'. var-declaration-1 -> ; | [NUM];
+5. type-specifier -> int | void
+6. fun-declaration -> type-specifier ID ( params ) compound-stmt
+7. params -> param-list | void
+8. param-list -> param param-list-1
+8'. param-list-1 -> , param-list | e
+9. param -> type-specifier ID param-1
+9'. param-1 -> [] | e
+10. compound-stmt -> { declaration-list statement-list }
+11. statement-list -> statement statement-list | e
+12. statement -> expression-stmt | compound-stmt | selection-stmt | iteration-stmt |
+return-stmt | switch-stmt
+13. expression-stmt -> expression ; | continue ; | break ; | ;
+14. selection-stmt -> if ( expression ) statement else statement
+15. iteration-stmt -> while ( expression ) statement
+16. return-stmt -> return return-stmt-1
+16'. return-stmt-1 -> ; | expression ;
+17. switch-stmt -> switch ( expression ) { case-stmts default-stmt }
+18. case-stmts -> case-stmt case-stmts | e
+19. case-stmt -> case NUM : statement-list
+20. default-stmt -> default : statement-list | ϵ
+21. expression -> var = expression | simple-expression
+22. var -> ID var-1
+22'. var-1 -> [ expression ] | e
+23. simple-expression -> additive-expression simple-expression-1
+23'. simple-expression-1 -> relop additive-expression | e
+24. relop -> < | ==
+25. additive-expression -> term additive-expression-1
+25'. additive-expression-1 -> addop additive-expression | e
+26. addop -> + | -
+27. term -> signed-factor term1
+27'. term-1 -> * term | e
+28. signed-factor -> factor | + factor | - factor
+29. factor -> ( expression ) | var | call | NUM
+30. call -> ID ( args )
+31. args -> arg-list | ϵ
+32. arg-list -> expression arg-list-1
+32'. arg-list-1 -> , arg-list | e
