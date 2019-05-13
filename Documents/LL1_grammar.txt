@@ -32,7 +32,7 @@ return-stmt | switch-stmt
 25. additive-expression -> term additive-expression-1
 25'. additive-expression-1 -> addop additive-expression | EPSILON
 26. addop -> + | -
-27. term -> signed-factor term1
+27. term -> signed-factor term-1
 27'. term-1 -> * term | EPSILON
 28. signed-factor -> factor | + factor | - factor
 29. factor -> ( expression ) | var | call | NUM

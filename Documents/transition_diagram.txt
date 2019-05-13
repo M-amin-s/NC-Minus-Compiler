@@ -1,0 +1,114 @@
+1. program
+1 --- declaration-list ---> 2 --- EOF ---> 3*
+2. declaration-list
+4 --- declaration ---> 5 --- declaration-list ---> 6*
+3. declaration
+7 --- var-declaration ---> 8*
+7 --- fun-declaration ---> 8*
+4. var-declaration
+9 --- type-specfier ---> 10 --- ID ---> 11 --- var-declaration-1 ---> 12*
+4'. var-declaration-1
+13 --- ; ---> 17*
+13 --- [ ---> 14 --- NUM ---> 15 --- ] ---> 16 --- ; ---> 17*
+5. type-specifier
+18 --- int ---> 19*
+18 --- void ---> 19*
+6. fun-declaration
+20 --- type-specifier ---> 21 --- ID ---> 22 --- ( ---> 23 --- params ---> 24 --- ) ---> 25 --- compound-stmt ---> 26*
+7. params
+27 --- param-list ---> 28*
+27 --- void ---> 28*
+8. param-list
+29 --- param ---> 30 --- param-list-1 ---> 31*
+8'. param-list-1
+32 --- , ---> 33 --- param-list ---> 34*
+32 --- EPSILON ---> 34*
+9. param
+35 --- type-specifier ---> 36 --- ID ---> 37 --- param-1 ---> 38*
+9'. param-1
+39 --- [ ---> 40 --- ] ---> 41*
+39 --- EPSILON ---> 41*
+10. compound-stmt
+42 --- { ---> 43 --- declaration-list ---> 44 --- statement-list ---> 45 --- } ---> 46*
+11. statement-list
+47 --- statement ---> 48 --- statement-list ---> 49*
+47 --- EPSILON ---> 49*
+12. statement
+50 --- expression-stmt ---> 51*
+50 --- compound-stmt ---> 51*
+50 --- selection-stmt ---> 51*
+50 --- iteration-stmt ---> 51*
+50 --- return-stmt ---> 51*
+50 --- switch-stmt ---> 51*
+13. expression-stmt -> continue ; | break ; | ;
+52 --- expression ---> 53 --- ; ---> 56*
+52 --- continue ---> 54 --- ; ---> 56*
+52 --- break ---> 55 --- ; ---> 56*
+52 --- ; ---> 56*
+14. selection-stmt
+57 --- if ---> 58 --- ( ---> 59 --- expression ---> 60 --- ) ---> 61 --- statement ---> 62 --- else ---> 63 --- statement ---> 64*
+15. iteration-stmt
+65 --- while ---> 66 --- ( ---> 67 --- expression ---> 68 --- ) ---> 69 --- statement ---> 70*
+16. return-stmt
+71 --- return ---> 72 --- return-stmt-1 ---> 73*
+16'. return-stmt-1
+74 --- ; ---> 76*
+74 --- expression ---> 75 --- ; ---> 76*
+17. switch-stmt
+77 --- switch ---> 78 --- ( ---> 79 --- expression ---> 80 --- ) ---> 81 --- { ---> 82 --- case-stmts ---> 83 --- default-stmt ---> 84 --- } ---> 85*
+18. case-stmts
+86 --- case-stmt ---> 87 --- case-stmts ---> 88*
+86 --- EPSILON ---> 88*
+19. case-stmt
+89 --- case ---> 90 --- NUM ---> 91 --- : ---> 92 --- statement-list ---> 93*
+20. default-stmt
+94 --- default ---> 95 --- : ---> 96 --- statement-list ---> 97*
+94 --- EPSILON ---> 97*
+21. expression
+98 --- var ---> 99 --- = ---> 100 --- expression ---> 101*
+98 --- simple-expression ---> 101*
+22. var
+102 --- ID ---> 103 --- var-1 ---> 104*
+22'. var-1
+105 --- [ ---> 106 --- expression ---> 107 --- ] ---> 108*
+105 --- EPSILON ---> 108*
+23. simple-expression
+109 --- additive-expression ---> 110 --- simple-expression-1 ---> 111*
+23'. simple-expression-1
+112 --- relop ---> 113 --- additive-expression ---> 114*
+112 --- EPSILON ---> 114*
+24. relop
+115 --- < ---> 117*
+115 --- = ---> 116 --- = ---> 117*
+25. additive-expression
+118 --- term ---> 119 --- additive-expression-1 ---> 120*
+25'. additive-expression-1
+121 --- addop ---> 122 --- additive-expression ---> 123*
+121 --- EPSILON ---> 123*
+26. addop
+124 --- + ---> 125*
+124 --- - ---> 125*
+27. term
+126 --- signed-factor ---> 127 --- term-1 ---> 128*
+27'. term-1
+129 --- * ---> 130 --- term ---> 131*
+129 --- EPSILON ---> 131*
+28. signed-factor
+132 --- + ---> 133 --- factor ---> 135*
+132 --- - ---> 134 --- factor ---> 135*
+132 --- factor ---> 135*
+29. factor -> ( expression ) | var | call | NUM
+136 --- ( ---> 137 --- expression ---> 138 --- ) ---> 139*
+136 --- var ---> 139*
+136 --- call ---> 139*
+136 --- NUM ---> 139*
+30. call
+140 --- ID ---> 141 --- ( ---> 142 --- args ---> 143 --- ) ---> 144*
+31. args
+145 --- arg-list ---> 146*
+145 --- EPSILON ---> 146*
+32. arg-list
+147 --- expression ---> 148 --- arg-list-1 ---> 149*
+32'. arg-list-1 -> , arg-list | EPSILON
+150 --- , ---> 151 --- arg-list ---> 152*
+150 --- EPSILON ---> 152*
