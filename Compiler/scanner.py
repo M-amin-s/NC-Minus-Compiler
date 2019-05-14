@@ -1,7 +1,24 @@
+from enum import Enum
+
+
+class TokenType(Enum):
+    NOT_A_TYPE = 0
+    NUM = 1
+    ID = 2
+    KEYWORD = 3
+    SYMBOL = 4
+    COMMENT = 5
+    WHITESPACE = 6
+    EOF = 7
+
+    def get_primarity(self):
+        return primaries[self.value]
+
+
 def is_keyword(str):
     if (str == 'if' or str == 'else' or str == 'void' or str == 'int' or str == 'while'
-            or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
-            or str == 'case' or str == 'return'):
+        or str == 'break' or str == 'continue' or str == 'switch' or str == 'default'
+        or str == 'case' or str == 'return'):
         return True
     else:
         return False
@@ -40,10 +57,9 @@ def is_comment(str):
 
 
 def is_symbol(str):
-    if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']'
-            or str == '(' or str == ')' or str == '{' or str == '}'
-            or str == '+' or str == '-' or str == '*' or str == '='
-            or str == '<' or str == '=='):
+    if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']' or
+    str == '(' or str == ')' or str == '{' or str == '}' or str == '+' or
+    str == '-' or str == '*' or str == '=' or str == '<' or str == '==' or str == '>'):
         return True
     else:
         return False
@@ -82,7 +98,7 @@ def is_id(str):
 
 def is_char_whitespace(char):
     if (ord(char) == 32 or ord(char) == 10 or ord(char) == 13
-            or ord(char) == 9 or ord(char) == 11 or ord(char) == 12):
+        or ord(char) == 9 or ord(char) == 11 or ord(char) == 12):
         return True
     else:
         return False
@@ -184,28 +200,37 @@ def write_token_in_file(write_token_type, write_string):
 
 types = ["NOT A TYPE", "NUM", "ID", "KEYWORD", "SYMBOL", "COMMENT", "WHITESPACE"]
 primaries = [7, 4, 5, 2, 3, 1, 6]
-f_out_results = open("scanner.txt", "w+")
-f_out_errors = open("lexical_errors.txt", "w+")
-with open("test.txt") as f:
-    start_char = ''
-    token_type = 0
-    last_token_type = 0
-    last_token_string = ""
-    string = ""
-    is_started = False
-    eof = False
-    while not eof:
-        last_token_string = string
-        last_token_type = token_type
-        string, token_type, start_char, eof = get_next_token(f, start_char)
-        if token_type == 0 and last_token_type != 6:
-            last_token_string += string
-            last_token_type = 0
+f_out_results = None
+f_out_errors = None
+
+
+def scan():
+    global f_out_results, f_out_errors
+    f_out_results = open("scanner.txt", "w+")
+    f_out_errors = open("lexical_errors.txt", "w+")
+    with open("../Tests/scanner_test/test.txt") as f:
+        start_char = ''
+        token_type = 0
+        last_token_type = 0
+        last_token_string = ""
+        string = ""
+        is_started = False
+        eof = False
+        while not eof:
+            last_token_string = string
+            last_token_type = token_type
             string, token_type, start_char, eof = get_next_token(f, start_char)
-        if is_started:
-            write_token_in_file(last_token_type, last_token_string)
-        is_started = True
-    write_token_in_file(token_type, string)
-f.close()
-f_out_errors.close()
-f_out_results.close()
+            if token_type == 0 and last_token_type != 6:
+                last_token_string += string
+                last_token_type = 0
+                string, token_type, start_char, eof = get_next_token(f, start_char)
+            if is_started:
+                write_token_in_file(last_token_type, last_token_string)
+            is_started = True
+        write_token_in_file(token_type, string)
+    f.close()
+    f_out_errors.close()
+    f_out_results.close()
+
+
+# scan()
