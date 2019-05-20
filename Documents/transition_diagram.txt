@@ -1,156 +1,209 @@
-1. program
-1 --- declaration-list ---> 2 --- EOF ---> 3*
+1. Program -> Declaration_list eof.
+1 --- Declaration_list ---> 2 --- eof ---> 3*
 
-2. declaration-list
-4 --- declaration ---> 5 --- declaration-list ---> 6*
+2. Declaration_list -> Declaration Declaration_list | EPSILON.
+4 --- Declaration ---> 5 --- Declaration-list ---> 6*
+4 --- EPSILON ---> 6*
 
-3. declaration
-7 --- var-declaration ---> 8*
-7 --- fun-declaration ---> 8*
+3. Declaration -> Type_specifier id Var_Fun_declaration.
+7 --- Type_specifier ---> 8 --- id ---> 9 --- Var_Fun_declaration ---> 10*
 
-4. var-declaration
-9 --- type-specfier ---> 10 --- ID ---> 11 --- var-declaration-1 ---> 12*
-*
+4. Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt.
+11 --- Var_declaration_1 ---> 15*
+11 --- ( ---> 12 --- Params ---> 13 --- ) ---> 14 --- Compound_stmt ---> 15*
 
-4'. var-declaration-1
-13 --- ; ---> 17*
-13 --- [ ---> 14 --- NUM ---> 15 --- ] ---> 16 --- ; ---> 17*
+5. Var_declaration -> Type_specifier id Var_declaration_1.
+16 --- Type_specifier ---> 17 --- id ---> 18 --- Var_declaration_1 ---> 19*
 
-5. type-specifier
-18 --- int ---> 19*
-18 --- void ---> 19*
+6. Var_declaration_1 -> ; | [ num ] ;.
+20 --- ; ---> 24*
+20 --- [ ---> 21 --- num ---> 22 --- ] ---> 23 --- ; ---> 24*
 
-6. fun-declaration
-20 --- type-specifier ---> 21 --- ID ---> 22 --- ( ---> 23 --- params ---> 24 --- ) ---> 25 --- compound-stmt ---> 26*
+7. Type_specifier -> int | void.
+25 --- int ---> 26*
+25 --- void ---> 26*
 
-7. params
-27 --- param-list ---> 28*
-27 --- void ---> 28*
+8. Fun_declaration -> Type_specifier id ( Params ) Compound_stmt.
+27 --- Type_specifier ---> 28 --- id ---> 29 --- ( ---> 30 --- Params ---> 31 --- ) ---> 32 --- Compound_stmt ---> 33*
 
-8. param-list
-29 --- param ---> 30 --- param-list-1 ---> 31*
+9. Params -> void Params_1 | Params_2.
+34 --- void ---> 35 --- Params_1 ---> 36*
+34 --- Params_2 ---> 36*
 
-8'. param-list-1
-32 --- , ---> 33 --- param-list ---> 34*
-32 --- EPSILON ---> 34*
+10. Params_1 -> Param_list_void | EPSILON.
+37 --- Param_list_void ---> 38*
+37 --- EPSILON ---> 38*
 
-9. param
-35 --- type-specifier ---> 36 --- ID ---> 37 --- param-1 ---> 38*
+11. Param_list_void -> Param_void Param_list_1.
+39 --- Param_void ---> 40 --- Param_list_1 ---> 41*
 
-9'. param-1
-39 --- [ ---> 40 --- ] ---> 41*
-39 --- EPSILON ---> 41*
+12. Param_void -> id Param_1.
+42 --- id ---> 43 --- Param_1 ---> 44*
 
-10. compound-stmt
-42 --- { ---> 43 --- declaration-list ---> 44 --- statement-list ---> 45 --- } ---> 46*
+13. Params_2 -> Param_void_1 Param_list_1.
+45 --- Param_void_1 ---> 46 --- Param_list_1 ---> 47*
 
-11. statement-list
-47 --- statement ---> 48 --- statement-list ---> 49*
-47 --- EPSILON ---> 49*
+14. Param_void_1 -> int id Param_1.
+48 --- int ---> 49 --- id ---> 50 --- Param_1 ---> 51*
 
-12. statement
-50 --- expression-stmt ---> 51*
-50 --- compound-stmt ---> 51*
-50 --- selection-stmt ---> 51*
-50 --- iteration-stmt ---> 51*
-50 --- return-stmt ---> 51*
-50 --- switch-stmt ---> 51*
+15. Param_list -> Param Param_list_1.
+52 --- Param ---> 53 --- Param_list_1 ---> 54*
 
+16. Param_list_1 -> , Param_list | EPSILON.
+55 --- , ---> 56 --- Param_list ---> 57*
+55 --- EPSILON ---> 57*
 
-13. expression-stmt -> continue ; | break ; | ;
-52 --- expression ---> 53 --- ; ---> 56*
-52 --- continue ---> 54 --- ; ---> 56*
-52 --- break ---> 55 --- ; ---> 56*
-52 --- ; ---> 56*
+17. Param -> Type_specifier id Param_1.
+58 --- Type_specifier ---> 59 --- id ---> 60 --- Param_1 ---> 61*
 
-14. selection-stmt
-57 --- if ---> 58 --- ( ---> 59 --- expression ---> 60 --- ) ---> 61 --- statement ---> 62 --- else ---> 63 --- statement ---> 64*
+18. Param_1 -> [ ] | EPSILON.
+62 --- [ ---> 63 --- ] ---> 64*
+62 --- EPSILON ---> 64*
 
-15. iteration-stmt
-65 --- while ---> 66 --- ( ---> 67 --- expression ---> 68 --- ) ---> 69 --- statement ---> 70*
+19. Compound_stmt -> { Declaration_list Statement_list }.
+65 --- { ---> 66 --- Declaration_list ---> 67 --- Statement_list ---> 68 --- } ---> 69*
 
-16. return-stmt
-71 --- return ---> 72 --- return-stmt-1 ---> 73*
+20. Statement_list -> Statement Statement_list | EPSILON.
+70 --- Statement ---> 71 --- Statement_list ---> 72*
+70 --- EPSILON ---> 72*
 
-16'. return-stmt-1
-74 --- ; ---> 76*
-74 --- expression ---> 75 --- ; ---> 76*
+21. Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt.
+73 --- Expression_stmt ---> 74*
+73 --- Compound_stmt ---> 74*
+73 --- Selection_stmt ---> 74*
+73 --- Iteration_stmt ---> 74*
+73 --- Return_stmt ---> 74*
+73 --- Switch_stmt ---> 74*
 
-17. switch-stmt
-77 --- switch ---> 78 --- ( ---> 79 --- expression ---> 80 --- ) ---> 81 --- { ---> 82 --- case-stmts ---> 83 --- default-stmt ---> 84 --- } ---> 85*
+22. Expression_stmt -> Expression ; | continue ; | break ; | ;.
+75 --- Expression ---> 76 --- ; ---> 77*
+75 --- continue ---> 76 --- ; ---> 77*
+75 --- break ---> 76 --- ; ---> 77*
+75 --- ; ---> 77*
 
-18. case-stmts
-86 --- case-stmt ---> 87 --- case-stmts ---> 88*
-86 --- EPSILON ---> 88*
+23. Selection_stmt -> if ( Expression ) Statement else Statement.
+78 --- if ---> 79 --- ( ---> 80 --- Expression ---> 81 --- ) ---> 82 --- Statement ---> 83 --- else ---> 84 --- Statement ---> 85*
 
-19. case-stmt
-89 --- case ---> 90 --- NUM ---> 91 --- : ---> 92 --- statement-list ---> 93*
+24. Iteration_stmt -> while ( Expression ) Statement.
+86 --- while ---> 87 --- ( ---> 88 --- Expression ---> 89 --- ) ---> 90 --- Statement ---> 91*
 
-20. default-stmt
-94 --- default ---> 95 --- : ---> 96 --- statement-list ---> 97*
-94 --- EPSILON ---> 97*
+25. Return_stmt -> return Return_stmt_1.
+92 --- return ---> 93 --- Return_stmt_1 ---> 94*
 
-21. expression
-98 --- var ---> 99 --- = ---> 100 --- expression ---> 101*
-98 --- simple-expression ---> 101*
+26. Return_stmt_1 -> ; | Expression ;.
+95 --- Expression ---> 96 --- ; ---> 97*
+95 --- ; ---> 97*
 
-22. var
-102 --- ID ---> 103 --- var-1 ---> 104*
+27. Switch_stmt -> switch ( Expression ) { Case_stmts Default_stmt }.
+98 --- switch ---> 99 --- ( ---> 100 --- Expression ---> 101 --- ) ---> 102 --- { ---> 103 --- Case_stmts ---> 104 --- Default_stmt ---> 105 --- } ---> 106*
 
-22'. var-1
-105 --- [ ---> 106 --- expression ---> 107 --- ] ---> 108*
-105 --- EPSILON ---> 108*
+28. Case_stmts -> Case_stmt Case_stmts | EPSILON.
+107 --- Case_stmt ---> 108 --- Case_stmts ---> 109*
+107 --- EPSILON ---> 109*
 
-23. simple-expression
-109 --- additive-expression ---> 110 --- simple-expression-1 ---> 111*
+29. Case_stmt -> case num : Statement_list.
+110 --- case ---> 111 --- num ---> 112 --- : ---> 113 --- Statement_list ---> 114*
 
-23'. simple-expression-1
-112 --- relop ---> 113 --- additive-expression ---> 114*
-112 --- EPSILON ---> 114*
+30. Default_stmt -> default : Statement_list | EPSILON.
+115 --- default ---> 116 --- : ---> 117 --- Statement_list ---> 118*
+115 --- EPSILON ---> 118*
 
-24. relop
-115 --- < ---> 117*
-115 --- = ---> 116 --- = ---> 117*
+31. Expression -> id Expression_id_1 | Expression_id_2.
+119 --- id ---> 120 --- Expression_id_1 ---> 121*
+119 --- Expression_id_2 ---> 121*
 
-25. additive-expression
-118 --- term ---> 119 --- additive-expression-1 ---> 120*
+32. Simple_expression_id_1 -> Additive_expression_id_1 Simple_expression_1.
+122 --- Additive_expression_id_1 ---> 123 --- Simple_expression_1 ---> 124*
 
-25'. additive-expression-1
-121 --- addop ---> 122 --- additive-expression ---> 123*
-121 --- EPSILON ---> 123*
+33. Additive_expression_id_1 -> Term_id_1 Additive_expression_1.
+125 --- Term_id_1 ---> 126 --- Additive_expression_1 ---> 127*
 
-26. addop
-124 --- + ---> 125*
-124 --- - ---> 125*
+34. Term_id_1 -> Signed_factor_id Term_1.
+128 --- Signed_factor_id ---> 129 --- Term_1 ---> 130*
 
-27. term
-126 --- signed-factor ---> 127 --- term-1 ---> 128*
+35. Signed_factor_id -> Var_Call.
+131 --- Var_Call ---> 132*
 
-27'. term-1
-129 --- * ---> 130 --- term ---> 131*
-129 --- EPSILON ---> 131*
+36. Expression_id_1 -> Var_1 Expression_ob_1 | Simple_expression_id_ob_2.
+133 --- Var_1  ---> 134 --- Expression_ob_1 ---> 135*
+133 --- Simple_expression_id_ob_2 ---> 135*
 
-28. signed-factor
-132 --- + ---> 133 --- factor ---> 135*
-132 --- - ---> 134 --- factor ---> 135*
-132 --- factor ---> 135*
+37. Expression_ob_1 -> = Expression | Simple_expression_id_ob_1.
+136 --- = ---> 137 --- Expression ---> 138*
+136 --- Simple_expression_id_ob_1 ---> 138*
 
-29. factor -> ( expression ) | var | call | NUM
-136 --- ( ---> 137 --- expression ---> 138 --- ) ---> 139*
-136 --- var ---> 139*
-136 --- call ---> 139*
-136 --- NUM ---> 139*
+38. Simple_expression_id_ob_1 -> Additive_expression_id_ob_1 Simple_expression_1.
+139 --- Additive_expression_id_ob_1 ---> 140 --- Simple_expression_1 ---> 141*
 
-30. call
-140 --- ID ---> 141 --- ( ---> 142 --- args ---> 143 --- ) ---> 144*
+39. Additive_expression_id_ob_1 -> Term_1 Additive_expression_1.
+142 --- Term_1 ---> 143 --- Additive_expression_1 ---> 144*
 
-31. args
-145 --- arg-list ---> 146*
-145 --- EPSILON ---> 146*
+40. Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1.
+145 --- Additive_expression_id_ob_2 ---> 146 --- Simple_expression_1 ---> 147*
 
-32. arg-list
-147 --- expression ---> 148 --- arg-list-1 ---> 149*
+41. Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1.
+148 --- Term_id_ob_2 ---> 149 --- Additive_expression_1 ---> 150*
 
-32'. arg-list-1 -> , arg-list | EPSILON
-150 --- , ---> 151 --- arg-list ---> 152*
-150 --- EPSILON ---> 152*
+42. Term_id_ob_2 -> ( Args ) Term_1.
+151 --- ( ---> 152 --- Args ---> 153 --- ) ---> 154 --- Term_1 ---> 155*
+
+43. Var_1 -> [ Expression ] | EPSILON.
+156 --- [ ---> 157 --- Expression ---> 158 --- ] ---> 159*
+156 --- EPSILON ---> 159*
+
+44. Simple_expression -> Additive_expression Simple_expression_1.
+160 --- Additive_expression ---> 161 --- Simple_expression_1 ---> 162*
+
+45. Simple_expression_1 -> Relop Additive_expression | EPSILON.
+163 --- Relop ---> 164 --- Additive_expression ---> 165*
+163 --- EPSILON ---> 165*
+
+46. Relop -> < | ==.
+166 --- = ---> 167 --- = ---> 168*
+166 --- < ---> 168*
+
+47. Additive_expression -> Term Additive_expression_1.
+169 --- Term ---> 170 --- Additive_expression_1 ---> 171*
+
+48. Additive_expression_1 -> Addop Additive_expression | EPSILON.
+172 --- Addop ---> 173 --- Additive_expression ---> 174*
+172 --- EPSILON ---> 174*
+
+49. Addop -> + | -.
+175 --- + ---> 176*
+175 --- - ---> 176*
+
+50. Term -> Signed_factor Term_1.
+177 --- Signed_factor ---> 178 --- Term_1 ---> 179*
+
+51. Term_1 -> * Term | EPSILON.
+180 --- * ---> 181 --- Term ---> 182*
+180 --- EPSILON ---> 182*
+
+52. Signed_factor -> Factor | + Factor | - Factor.
+183 --- Factor ---> 185*
+183 --- + ---> 184 --- Factor ---> 185*
+183 --- - ---> 184 --- Factor ---> 185*
+
+53. Factor -> ( Expression ) | id Var_Call | num.
+186 --- ( ---> 187 --- Expression ---> 188 --- ) ---> 190*
+186 --- id ---> 189 --- Var_Call ---> 190*
+186 --- num ---> 190*
+
+54. Var_Call -> ( Args ) | Var_1.
+191 --- ( ---> 192 --- Args ---> 193 --- ) ---> 194*
+191 --- Var_1 ---> 194*
+
+55. Call -> id ( Args ).
+195 --- id ---> 196 --- ( ---> 197 --- Args ---> 198 --- ) ---> 199*
+
+56. Args -> Arg_list | EPSILON.
+200 --- Arg_list ---> 201*
+200 --- EPSILON ---> 201*
+
+57. Arg_list -> Expression Arg_list_1.
+202 --- Expression ---> 203 --- Arg_list_1 ---> 204*
+
+58. Arg_list_1 -> , Arg_list | EPSILON.
+205 --- , ---> 206 --- Arg_list ---> 207*
+205 --- EPSILON ---> 207*

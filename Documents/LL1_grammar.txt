@@ -1,42 +1,58 @@
-1. program -> declaration-list EOF
-2. declaration-list -> declaration declaration-list | EPSILON
-3. declaration -> var-declaration | fun-declaration
-4. var-declaration -> type-specifier ID var-declaration-1
-4'. var-declaration-1 -> ; | [NUM];
-5. type-specifier -> int | void
-6. fun-declaration -> type-specifier ID ( params ) compound-stmt
-7. params -> param-list | void
-8. param-list -> param param-list-1
-8'. param-list-1 -> , param-list | EPSILON
-9. param -> type-specifier ID param-1
-9'. param-1 -> [] | EPSILON
-10. compound-stmt -> { declaration-list statement-list }
-11. statement-list -> statement statement-list | EPSILON
-12. statement -> expression-stmt | compound-stmt | selection-stmt | iteration-stmt |
-return-stmt | switch-stmt
-13. expression-stmt -> expression ; | continue ; | break ; | ;
-14. selection-stmt -> if ( expression ) statement else statement
-15. iteration-stmt -> while ( expression ) statement
-16. return-stmt -> return return-stmt-1
-16'. return-stmt-1 -> ; | expression ;
-17. switch-stmt -> switch ( expression ) { case-stmts default-stmt }
-18. case-stmts -> case-stmt case-stmts | EPSILON
-19. case-stmt -> case NUM : statement-list
-20. default-stmt -> default : statement-list | EPSILON
-21. expression -> var = expression | simple-expression
-22. var -> ID var-1
-22'. var-1 -> [ expression ] | EPSILON
-23. simple-expression -> additive-expression simple-expression-1
-23'. simple-expression-1 -> relop additive-expression | EPSILON
-24. relop -> < | ==
-25. additive-expression -> term additive-expression-1
-25'. additive-expression-1 -> addop additive-expression | EPSILON
-26. addop -> + | -
-27. term -> signed-factor term-1
-27'. term-1 -> * term | EPSILON
-28. signed-factor -> factor | + factor | - factor
-29. factor -> ( expression ) | var | call | NUM
-30. call -> ID ( args )
-31. args -> arg-list | EPSILON
-32. arg-list -> expression arg-list-1
-32'. arg-list-1 -> , arg-list | EPSILON
+Program -> Declaration_list eof.
+Declaration_list -> Declaration Declaration_list | EPSILON.
+Declaration -> Type_specifier id Var_Fun_declaration.
+Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt.
+Var_declaration -> Type_specifier id Var_declaration_1.
+Var_declaration_1 -> ; | [ num ] ;.
+Type_specifier -> int | void.
+Fun_declaration -> Type_specifier id ( Params ) Compound_stmt.
+Params -> void Params_1 | Params_2.
+Params_1 -> Param_list_void | EPSILON.
+Param_list_void -> Param_void Param_list_1.
+Param_void -> id Param_1.
+Params_2 -> Param_void_1 Param_list_1.
+Param_void_1 -> int id Param_1.
+Param_list -> Param Param_list_1.
+Param_list_1 -> , Param_list | EPSILON.
+Param -> Type_specifier id Param_1.
+Param_1 -> [ ] | EPSILON.
+Compound_stmt -> { Declaration_list Statement_list }.
+Statement_list -> Statement Statement_list | EPSILON.
+Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt.
+Expression_stmt -> Expression ; | continue ; | break ; | ;.
+Selection_stmt -> if ( Expression ) Statement else Statement.
+Iteration_stmt -> while ( Expression ) Statement.
+Return_stmt -> return Return_stmt_1.
+Return_stmt_1 -> ; | Expression ;.
+Switch_stmt -> switch ( Expression ) { Case_stmts Default_stmt }.
+Case_stmts -> Case_stmt Case_stmts | EPSILON.
+Case_stmt -> case num : Statement_list.
+Default_stmt -> default : Statement_list | EPSILON.
+Expression -> id Expression_id_1 | Expression_id_2.
+Simple_expression_id_1 -> Additive_expression_id_1 Simple_expression_1.
+Additive_expression_id_1 -> Term_id_1 Additive_expression_1.
+Term_id_1 -> Signed_factor_id Term_1.
+Signed_factor_id -> Var_Call.
+Expression_id_1 -> Var_1 Expression_ob_1 | Simple_expression_id_ob_2.
+Expression_ob_1 -> = Expression | Simple_expression_id_ob_1.
+Simple_expression_id_ob_1 -> Additive_expression_id_ob_1 Simple_expression_1.
+Additive_expression_id_ob_1 -> Term_1 Additive_expression_1.
+Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1.
+Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1.
+Term_id_ob_2 -> ( Args ) Term_1.
+Var_1 -> [ Expression ] | EPSILON.
+Simple_expression -> Additive_expression Simple_expression_1.
+Simple_expression_1 -> Relop Additive_expression | EPSILON.
+Relop -> < | ==.
+Additive_expression -> Term Additive_expression_1.
+Additive_expression_1 -> Addop Additive_expression | EPSILON.
+Addop -> + | -.
+Term -> Signed_factor Term_1.
+Term_1 -> * Term | EPSILON.
+Signed_factor -> Factor | + Factor | - Factor.
+Factor -> ( Expression ) | id Var_Call | num.
+Var_Call -> ( Args ) | Var_1.
+Call -> id ( Args ).
+Args -> Arg_list | EPSILON.
+Arg_list -> Expression Arg_list_1.
+Arg_list_1 -> , Arg_list | EPSILON.
