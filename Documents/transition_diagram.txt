@@ -207,3 +207,21 @@
 58. Arg_list_1 -> , Arg_list | EPSILON.
 205 --- , ---> 206 --- Arg_list ---> 207*
 205 --- EPSILON ---> 207*
+
+59. Expression_id_2 -> Additive_expression_id_2 Simple_expression_1.
+208 --- Additive_expression_id_2 ---> 209 --- Simple_expression_1 ---> 210*
+
+60. Additive_expression_id_2 -> Term_id_2 Additive_expression_1.
+211 --- Term_id_2 ---> 212 --- Additive_expression_1 ---> 213*
+
+61. Term_id_2 -> Signed_factor_id_2 Term_1.
+214 --- Signed_factor_id_2 ---> 215 --- Term_1 ---> 216*
+
+62. Signed_factor_id_2 -> Factor_id_1 | + Factor | - Factor.
+217 --- Factor_id_1 ---> 219*
+217 --- + ---> 218 --- Factor ---> 219*
+217 --- - ---> 218 --- Factor ---> 219*
+
+63. Factor_id_1 -> ( Expression ) | num
+220 --- ( ---> 221 --- Expression ---> 222 --- ) ---> 223*
+220 --- num ---> 223*
