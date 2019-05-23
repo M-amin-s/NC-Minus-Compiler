@@ -5,7 +5,7 @@
 4 --- Declaration ---> 5 --- Declaration-list ---> 6*
 4 --- EPSILON ---> 6*
 
-3. Declaration -> Type_specifier id Var_Fun_declaration.
+3.  Declaration -> Type_specifier id Var_Fun_declaration.
 7 --- Type_specifier ---> 8 --- id ---> 9 --- Var_Fun_declaration ---> 10*
 
 4. Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt.

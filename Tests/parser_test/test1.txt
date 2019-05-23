@@ -1,1 +1,8 @@
-(a + b) * c
+int b;
+int foo(int d, int e){
+    int f;
+    return f;
+}
+void main(void){
+    return;
+}

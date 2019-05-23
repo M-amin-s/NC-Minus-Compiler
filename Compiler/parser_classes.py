@@ -101,12 +101,12 @@ class State:
                         pass
                 else:
                     if edge.label.is_equal(token_type, token_string):
-                        if self.is_first:
-                            parent = this_node
-                            new_level = this_node.level + 1
-                        else:
-                            parent = this_node.parent
-                            new_level = this_node.level
+                        # if self.is_first:
+                        parent = this_node
+                        new_level = this_node.level + 1
+                        # else:
+                        #     parent = this_node.parent
+                        #     new_level = this_node.level
                         new_node = Node(edge.label, new_level, parent, token_string)
                         parent.add_child(new_node)
                         return edge.end, True, past_states, this_node
@@ -114,7 +114,7 @@ class State:
                         # TODO: error handle
                         pass
             if isinstance(edge.label, Non_Terminal):
-                if (edge.label.is_in_first(token_type, token_string) or
+                if ((edge.label.is_in_first(token_type, token_string)) or
                             edge.label.is_epsilon_in_first() and
                             edge.label.is_in_follow(token_type, token_string)) or \
                         (eof and edge.label.is_epsilon_in_first()): #TODO: eof in follow
