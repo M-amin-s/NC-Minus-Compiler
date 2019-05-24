@@ -1,38 +1,36 @@
 from Compiler.parser_make_data import *
-from Compiler.scanner import get_next_token, TokenType
-
-
-def print_tree(node):
-    str = ""
-    for i in range(node.level - 1):
-        str += "\t"
-    str += node.__str__()
-    print(str)
-    for child in node.childs:
-        print_tree(child)
-
+from Compiler.scanner import get_next_token, TokenType, scan_errors
 
 with open("../Tests/parser_test/test1.txt") as f:
     eof = False
     start_char = ''
     # token_string, token_type, start_char, eof = get_next_token(f, start_char)
+    line_num = 1
     this_state = state_1
     past_states = []
     root_node = Node(program, 1, None, program.name)
     this_node = root_node
+    isEnded = False
     token_string, token_type_value, start_char, eof = get_next_token(f, start_char)
     while this_state != state_2 or len(past_states) > 0:
-        print(this_node)
-        print(this_state)
-        print(token_string, TokenType(token_type_value))
+        # print(this_node)
+        # print(this_state)
+        # print(token_string, TokenType(token_type_value))
         this_state, is_token_moved, past_states, this_node = \
-            this_state.next_state(past_states, token_string, TokenType(token_type_value), this_node, eof)
+            this_state.next_state(past_states, token_string, TokenType(token_type_value), this_node, eof, line_num)
+        if this_state is None:
+            break
         if is_token_moved and not eof:
             token_string, token_type_value, start_char, eof = get_next_token(f, start_char)
             while (TokenType(token_type_value) == TokenType.COMMENT or
                            TokenType(token_type_value) == TokenType.WHITESPACE) and not eof:
+                if ord(token_string[0]) == 10 and TokenType(token_type_value) == TokenType.WHITESPACE:
+                    line_num += 1
                 token_string, token_type_value, start_char, eof = get_next_token(f, start_char)
         elif is_token_moved and eof:
-            # TODO
-            pass
-    # print_tree(root_node)
+            if isEnded:
+                printer.print_error("%d: Syntax Error! Unexpected EndOfFile" % line_num)
+                break
+            isEnded = True
+    printer.print_tree(root_node)
+    scan_errors()

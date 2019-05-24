@@ -1,5 +1,7 @@
 from enum import Enum
 
+import os
+
 
 class TokenType(Enum):
     NOT_A_TYPE = 0
@@ -58,8 +60,8 @@ def is_comment(str):
 
 def is_symbol(str):
     if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']' or
-    str == '(' or str == ')' or str == '{' or str == '}' or str == '+' or
-    str == '-' or str == '*' or str == '=' or str == '<' or str == "=="):
+                str == '(' or str == ')' or str == '{' or str == '}' or str == '+' or
+                str == '-' or str == '*' or str == '=' or str == '<' or str == "=="):
         return True
     else:
         return False
@@ -205,14 +207,15 @@ def write_token_in_file(write_token_type, write_string):
 
 types = ["NOT A TYPE", "NUM", "ID", "KEYWORD", "SYMBOL", "COMMENT", "WHITESPACE"]
 primaries = [7, 4, 5, 2, 3, 1, 6]
+path_result_scanner = "scanner.txt"
 f_out_results = None
 f_out_errors = None
 
 
 def scan():
     global f_out_results, f_out_errors
-    f_out_results = open("scanner.txt", "w+")
-    f_out_errors = open("lexical_errors.txt", "w+")
+    f_out_results = open(path_result_scanner, "w+")
+    f_out_errors = open("errors.txt", "a+")
     with open("../Tests/parser_test/test1.txt") as f:
         start_char = ''
         token_type = 0
@@ -233,8 +236,12 @@ def scan():
                 write_token_in_file(last_token_type, last_token_string)
             is_started = True
         write_token_in_file(token_type, string)
-    f.close()
-    f_out_errors.close()
-    f_out_results.close()
+    # f.close()
+    # f_out_errors.close()
+    # f_out_results.close()
 
-# scan()
+
+def scan_errors():
+    scan()
+    os.remove(path_result_scanner)
+

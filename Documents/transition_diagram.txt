@@ -159,7 +159,7 @@
 163 --- EPSILON ---> 165*
 
 46. Relop -> < | ==.
-166 --- = ---> 167 --- = ---> 168*
+166 --- == ---> 168*
 166 --- < ---> 168*
 
 47. Additive_expression -> Term Additive_expression_1.
