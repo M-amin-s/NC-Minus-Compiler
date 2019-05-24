@@ -59,7 +59,7 @@ def is_comment(str):
 def is_symbol(str):
     if (str == ';' or str == ':' or str == ',' or str == '[' or str == ']' or
     str == '(' or str == ')' or str == '{' or str == '}' or str == '+' or
-    str == '-' or str == '*' or str == '=' or str == '<' or str == '==' or str == '>'):
+    str == '-' or str == '*' or str == '=' or str == '<' or str == "=="):
         return True
     else:
         return False
@@ -81,14 +81,16 @@ def is_id(str):
     for c in str:
         if state == 0 and c.isalpha():
             state = 2
-        if state == 0 and not c.isalpha():
+        elif state == 0 and not c.isalpha():
             state = 1
             break
-        if state == 2 and c.isdigit():
+        elif state == 2 and c.isdigit():
             state = 3
-        if state == 2 and not c.isalpha() and not c.isdigit():
+        elif state == 2 and not c.isalpha() and not c.isdigit():
             state = 1
-        if state == 3 and c.isalpha():
+        elif state == 3 and c.isalpha():
+            state = 1
+        elif state == 3 and not c.isalpha():
             state = 1
     if state == 2 or state == 3:
         return True
@@ -154,7 +156,7 @@ def get_next_token(file, start_char):
             token_type_next = check_language(next_string)
             if primaries[m_token_type] < primaries[token_type_next]:
                 token_type_next = 0
-        if token_type_next == 0 or token_type_next == 7 and is_accepted:
+        if (token_type_next == 0 or token_type_next == 7) and is_accepted:
             end_char = c
             break
     eof = token_type_next == 7
@@ -187,11 +189,14 @@ def write_token_in_file(write_token_type, write_string):
         if is_in_first_of_line_results:
             if is_started_results:
                 f_out_results.write("\n")
+                # print("\n")
             f_out_results.write("%d. (%s, %s) " % (line_num, types[write_token_type], write_string))
+            # print("%d. (%s, %s) " % (line_num, types[write_token_type], write_string))
             is_started_results = True
             is_in_first_of_line_results = False
         else:
             f_out_results.write("(%s, %s) " % (types[write_token_type], write_string))
+            # print("(%s, %s) " % (types[write_token_type], write_string))
     elif write_token_type == 6 and ord(write_string[0]) == 10:
         line_num += 1
         is_in_first_of_line_errors = True
@@ -208,7 +213,7 @@ def scan():
     global f_out_results, f_out_errors
     f_out_results = open("scanner.txt", "w+")
     f_out_errors = open("lexical_errors.txt", "w+")
-    with open("../Tests/scanner_test/test.txt") as f:
+    with open("../Tests/parser_test/test1.txt") as f:
         start_char = ''
         token_type = 0
         last_token_type = 0
@@ -231,6 +236,5 @@ def scan():
     f.close()
     f_out_errors.close()
     f_out_results.close()
-
 
 # scan()
