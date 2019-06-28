@@ -4,9 +4,20 @@ Declaration_list -> Declaration Declaration_list | epsilon
 Declaration -> Type_specifier #pid_dec id Var_Fun_declaration
 Var_declaration_1 -> #var_dec_finish ; | [ #arr_len_dec num ] #arr_dec_finish ;
 Type_specifier -> #ptype_int_dec int | #ptype_void_dec void
+Compound_stmt -> { #enter_scope Declaration_list Statement_list } #exit_scope
+Selection_stmt -> if ( Expression ) #if_jmpc_else Statement #if_jmpu_end #if_label_else else Statement #if_label_end
+Iteration_stmt -> while #while_label_start ( Expression ) #while_jmpc_end Statement #while_jmpu_start #while_label_end
+
+Switch_stmt -> #switch_jmpu_ignore #switch_label_start #switch_jmpu_end  #switch_label_ignore switch ( Expression ) { Case_stmts Default_stmt } #switch_label_end
+Case_stmts -> Case_stmt Case_stmts | epsilon
+Case_stmt -> case #push_ss num #switch_jmpc_skip : Statement_list #switch_jmpu_start #switch_label_skip
+Default_stmt -> default : Statement_list | epsilon
+
+
+
 
 Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt
-Params -> #ptype_void_dec void Params_1 | Params_2
+Params -> void Params_1 | Params_2
 Params_1 -> Param_list_void | epsilon
 Param_list_void -> Param_void Param_list_1
 Param_void -> id Param_1
@@ -16,20 +27,13 @@ Param_list -> Param Param_list_1
 Param_list_1 -> , Param_list | epsilon
 Param -> Type_specifier id Param_1
 Param_1 -> [ ] | epsilon
-
-
-Compound_stmt -> { Declaration_list Statement_list }
 Statement_list -> Statement Statement_list | epsilon
 Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt
 Expression_stmt -> Expression ; | continue ; | break ; | ;
-Selection_stmt -> if ( Expression ) Statement else Statement
-Iteration_stmt -> while ( Expression ) Statement
 Return_stmt -> return Return_stmt_1
 Return_stmt_1 -> ; | Expression ;
-Switch_stmt -> switch ( Expression ) { Case_stmts Default_stmt }
-Case_stmts -> Case_stmt Case_stmts | epsilon
-Case_stmt -> case num : Statement_list
-Default_stmt -> default : Statement_list | epsilon
+
+
 Expression -> id Expression_id_1 | Expression_id_2
 Simple_expression_id_1 -> Additive_expression_id_1 Simple_expression_1
 Additive_expression_id_1 -> Term_id_1 Additive_expression_1

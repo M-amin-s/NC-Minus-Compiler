@@ -35,3 +35,103 @@ arr_scope_stack.push((ss[ss_top-3], ss[ss_top-2], ss[ss_top-4], ss[ss_top-1], en
 ss.pop(5)
 end
 
+SCOPE HANDLING:
+
+#enter_scope begin:
+scope.push(scope_id + 1)
+scope_id <- scope_id + 1
+end
+
+#exit_scope begin:
+scope.pop(1)
+end
+
+IF STATEMENTS:
+
+#if_jmpc_else begin:
+ss.push(program_ptr)
+program_ptr += 1
+end
+
+#if_jmpu_end begin:
+ss.push(program_ptr)
+program_ptr += 1
+end
+
+#if_label_else begin:
+program_block[ss[top-1]] <- (JPF, ss[top_ss-2], program_ptr,)
+end
+
+#if_label_end begin:
+program_block[ss[top]] <- (JP, program_ptr,,)
+end
+
+EXPRESSION HANDLING:
+TODO: PUSH RESULT ON SS
+
+WHILE STATEMENTS:
+
+#while_label_start begin:
+ss.push(program_ptr)
+end
+
+#while_jmpc_end begin:
+ss.push(program_ptr)
+program_ptr += 1
+end
+
+#while_jmpu_start begin:
+program_block[program_ptr] <- (JP, ss[top_ss-2],,)
+end
+
+#while_label_end begin:
+program_block[ss[top]] <- (JPF, ss[top_ss-1], program_ptr + 1,)
+end
+
+SWITCH CASE EXPRESSIONS:
+
+#switch_jmpu_ignore begin:
+program_ptr += 1
+end
+
+#switch_label_start begin:
+
+end
+
+#switch_jmpu_end begin:
+ss.push(program_ptr)
+program_ptr += 1
+end
+
+#switch_label_ignore begin:
+program_block[program_ptr - 2] <- (JP, program_ptr,,)
+end
+
+#switch_label_end begin:
+
+end
+
+#switch_jmpc_skip begin:
+t <- temp_ptr
+temp_ptr += 4
+program_block[program_ptr] <- (EQ, ss[top_ss], ss[top_ss - 1], t)
+pop(1)
+ss.push(t)
+program_ptr += 1
+ss.push(program_ptr)
+program_ptr += 1
+end
+
+#switch_jmpu_start begin:
+program_block[program_ptr] <- (JP, ss[top_ss - 3],,)
+program_ptr += 1
+end
+
+#switch_label_skip begin:
+program_block[ss[top_ss]] <- (JPF, ss[top_ss - 1], program_ptr,)
+end
+
+#push_ss begin:
+num <- get_input
+ss.push(num)
+end
