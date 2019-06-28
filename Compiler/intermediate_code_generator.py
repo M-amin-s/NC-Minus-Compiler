@@ -23,8 +23,8 @@ VOID = 'void'
 # every time we get out of a scope we pop from the current_scope
 scope = [0]
 
-# the id of next scope
-scope_id = 1
+# the id of current scope
+scope_id = 0
 
 # a list of 4 pairs with the scope(list) in which the variables were defined at, the variable name,
 # the type of variable and the address of variable
@@ -37,10 +37,10 @@ var_scope_stack = []
 arr_scope_stack = []
 
 # a list of 4 pairs with the scope(list) in which the functions were defined at, the function name,
-# the argument types and return type
-# e.g. func_scope_stack=[('add_func', [0,1], ['int', 'int'], 'int'), ('main', [0], [], 'void')]
+# the argument types & names & address or value and return type
+# e.g. func_scope_stack=[('add_func', [0,1], [('a','int'), ('b','int')], 'int'), ('main', [0], [], 'void')]
 # must include ('main', [0], [], 'void') otherwise print error: "main function not found"
-func_scope_stack = [('output', [0], [INT], VOID)]
+func_scope_stack = [('output', [0], [('a', INT)], VOID)]
 
 # the array of (at most) 4 element pairs which needs to be filled with instructions
 # e.g. program_block=[('ADD', 500, 1000, 508), ('JPF', 512, 6, )]
@@ -52,7 +52,7 @@ semantic_stack = []
 # current address of data memory (increment by 4)
 data_ptr = 500
 
-# current address of program memory (increment by 4)
+# current address of program memory (increment by 1)
 program_ptr = 0
 
 # current address of temporary memory (increment by 4)

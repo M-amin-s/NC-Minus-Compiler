@@ -1,11 +1,17 @@
-#ptype_dec begin:
-type <- get_input
-ss.push(type)
+VARIABLE, ARRAY AND FUNCTION DECLARATON:
+TODO: FUNCTION DECLARATION
+
+#ptype_int_dec begin:
+ss.push('int')
+end
+
+#ptype_void_dec begin:
+ss.push('void')
 end
 
 #pid_dec begin:
-id <- get_input
-ss.push(id)
+name <- get_input
+ss.push(name)
 scp <- scope
 ss.push(scp)
 addr <- data_ptr
@@ -14,8 +20,8 @@ data_ptr += 4
 end
 
 #var_dec_finish begin:
-var_scope_stack.push(ss[top-2], ss[top-1], ss[top-3], ss[top])
-pop(4)
+var_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top-3], ss[ss_top]))
+ss.pop(4)
 end
 
 #arr_len_dec begin:
@@ -24,16 +30,8 @@ ss.push(len)
 end
 
 #arr_dec_finish begin:
-end = ss[top-1] + 4 * ss[top]
-arr_scope_stack.push(ss[top-3], ss[top-2], ss[top-4], ss[top-1], end)
-pop(5)
+end = ss[ss_top-1] + 4 * ss[ss_top]
+arr_scope_stack.push((ss[ss_top-3], ss[ss_top-2], ss[ss_top-4], ss[ss_top-1], end))
+ss.pop(5)
 end
 
-#no_arg_func begin:
-end
-
-#ptype_void_dec begin:
-end
-
-#pid_fun_dec begin:
-end
