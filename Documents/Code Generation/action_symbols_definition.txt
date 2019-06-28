@@ -108,7 +108,8 @@ program_block[program_ptr - 2] <- (JP, program_ptr,,)
 end
 
 #switch_label_end begin:
-
+program_block[ss[top_ss - 1]] <- (JP, program_ptr,,)
+pop(2)
 end
 
 #switch_jmpc_skip begin:
@@ -129,6 +130,7 @@ end
 
 #switch_label_skip begin:
 program_block[ss[top_ss]] <- (JPF, ss[top_ss - 1], program_ptr,)
+pop(2)
 end
 
 #push_ss begin:

@@ -8,7 +8,7 @@ Compound_stmt -> { #enter_scope Declaration_list Statement_list } #exit_scope
 Selection_stmt -> if ( Expression ) #if_jmpc_else Statement #if_jmpu_end #if_label_else else Statement #if_label_end
 Iteration_stmt -> while #while_label_start ( Expression ) #while_jmpc_end Statement #while_jmpu_start #while_label_end
 
-Switch_stmt -> #switch_jmpu_ignore #switch_label_start #switch_jmpu_end  #switch_label_ignore switch ( Expression ) { Case_stmts Default_stmt } #switch_label_end
+Switch_stmt -> #switch_jmpu_ignore #switch_jmpu_end  #switch_label_ignore switch ( Expression ) { Case_stmts Default_stmt } #switch_label_end
 Case_stmts -> Case_stmt Case_stmts | epsilon
 Case_stmt -> case #push_ss num #switch_jmpc_skip : Statement_list #switch_jmpu_start #switch_label_skip
 Default_stmt -> default : Statement_list | epsilon
