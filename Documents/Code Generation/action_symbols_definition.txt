@@ -1,0 +1,23 @@
+#ptype_dec begin:
+end
+
+#pid_dec begin:
+end
+
+#dec_finish begin:
+end
+
+#arr_len begin:
+end
+
+#dec_finish_arr begin:
+end
+
+#no_arg_func begin:
+end
+
+#ptype_void_dec begin:
+end
+
+#pid_fun_dec begin:
+end
