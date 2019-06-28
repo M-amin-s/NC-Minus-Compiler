@@ -1,0 +1,3 @@
+current_scope = 0
+# scope_stack = ...
+
