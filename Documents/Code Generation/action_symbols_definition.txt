@@ -1,16 +1,32 @@
 #ptype_dec begin:
+type <- get_input
+ss.push(type)
 end
 
 #pid_dec begin:
+id <- get_input
+ss.push(id)
+scp <- scope
+ss.push(scp)
+addr <- data_ptr
+ss.push(addr)
+data_ptr += 4
 end
 
-#dec_finish begin:
+#var_dec_finish begin:
+var_scope_stack.push(ss[top-2], ss[top-1], ss[top-3], ss[top])
+pop(4)
 end
 
-#arr_len begin:
+#arr_len_dec begin:
+len <- get_input
+ss.push(len)
 end
 
-#dec_finish_arr begin:
+#arr_dec_finish begin:
+end = ss[top-1] + 4 * ss[top]
+arr_scope_stack.push(ss[top-3], ss[top-2], ss[top-4], ss[top-1], end)
+pop(5)
 end
 
 #no_arg_func begin:
