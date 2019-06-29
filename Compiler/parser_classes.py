@@ -1,4 +1,5 @@
-from Compiler.scanner import TokenType, get_next_token
+from Compiler.scanner import TokenType
+from Compiler.intermediate_code_generator import *
 
 
 class Terminal:
@@ -68,19 +69,41 @@ class Transition_diagram:
 
 
 class Edge:
-    def __init__(self, start, end, label):
+    def __init__(self, start, end, label, codegen_method=None):
         self.start = start
         self.end = end
         self.label = label
+        self.codegen_method = codegen_method
+
+    def move(self, past_states, token_string, token_type, this_node, generator):
+        if self.codegen_method is not None:
+            call_code_gen(token_string, token_type, self.codegen_method, generator)
+        if isinstance(self.label, Terminal):
+            if self.label.is_epsilon:
+                return self.end, False, past_states, this_node
+            else:
+                parent = this_node
+                new_level = this_node.level + 1
+                new_node = Node(self.label, new_level, parent, token_string)
+                parent.add_child(new_node)
+                return self.end, True, past_states, this_node
+        else:
+            parent = this_node
+            new_level = this_node.level + 1
+            new_node = Node(self.label, new_level, parent, self.label.name)
+            parent.add_child(new_node)
+            past_states.append(self.end)
+            return self.label.transition_diagram.start_state, False, past_states, new_node
 
 
 class State:
-    def __init__(self, number, non_terminal, is_end=False, is_first=False):
+    def __init__(self, number, non_terminal, is_end=False, is_first=False, codegen_method=None):
         self.number = number
         self.is_end = is_end
         self.is_first = is_first
         self.edges = []
         self.non_terminal = non_terminal
+        self.codegen_method = codegen_method
 
     def add_edge(self, edge):
         self.edges.append(edge)
@@ -90,32 +113,32 @@ class State:
                 epsilon_edge_index = i
         self.edges[epsilon_edge_index], self.edges[-1] = self.edges[-1], self.edges[epsilon_edge_index]
 
-    def next_state(self, past_states, token_string, token_type, this_node, eof, line_num):
+    def next_state(self, past_states, token_string, token_type, this_node, eof, line_num, generator):
         if len(self.edges) == 1 and isinstance(self.edges[0], Terminal) and \
                         self.edges[0].label.token_type == TokenType.EOF and not eof:
             printer.print_error("%d: Syntax Error! Malformed Input" % line_num)
             return None, False, None, None
         if self.is_end:
+            if self.codegen_method is not None:
+                call_code_gen(token_string, token_type, self.codegen_method, generator)
             return past_states.pop(), False, past_states, this_node.parent
         for i in range(len(self.edges)):
             edge = self.edges[i]
             if isinstance(edge.label, Terminal):
                 if edge.label.is_epsilon:
                     if self.non_terminal.is_in_follow(token_type, token_string) or eof:
-                        return edge.end, False, past_states, this_node
+                        return edge.move(past_states, token_string, token_type, this_node, generator)
                 else:
                     if edge.label.is_equal(token_type, token_string):
-                        parent = this_node
-                        new_level = this_node.level + 1
-                        new_node = Node(edge.label, new_level, parent, token_string)
-                        parent.add_child(new_node)
-                        return edge.end, True, past_states, this_node
+                        return edge.move(past_states, token_string, token_type, this_node, generator)
                     else:
                         if len(self.edges) == 1:
                             if edge.label.token_type == TokenType.ID or edge.label.token_type == TokenType.NUM:
-                                printer.print_error("%d: Syntax Error! Missing %s" % (line_num, edge.label.token_type.name))
+                                printer.print_error(
+                                    "%d: Syntax Error! Missing %s" % (line_num, edge.label.token_type.name))
                             else:
-                                printer.print_error("%d: Syntax Error! Missing %s" % (line_num, edge.label.token_string))
+                                printer.print_error(
+                                    "%d: Syntax Error! Missing %s" % (line_num, edge.label.token_string))
                             return None, False, None, None
             if isinstance(edge.label, Non_Terminal):
                 if (edge.label.is_in_first(token_type, token_string) or
@@ -125,12 +148,7 @@ class State:
                                 edge.label.is_epsilon_in_first() and
                                 edge.label.is_in_follow(token_type, token_string)) or \
                             (eof and edge.label.is_epsilon_in_first()):
-                        parent = this_node
-                        new_level = this_node.level + 1
-                        new_node = Node(edge.label, new_level, parent, edge.label.name)
-                        parent.add_child(new_node)
-                        past_states.append(edge.end)
-                        return edge.label.transition_diagram.start_state, False, past_states, new_node
+                        return edge.move(past_states, token_string, token_type, this_node, generator)
                     else:
                         if len(self.edges) == 1:
                             printer.print_error("%d: Syntax Error! Missing %s" % (line_num, edge.label))
@@ -182,4 +200,4 @@ class Printer:
             self.print_tree(child)
 
 
-printer = Printer("parser_tree.txt", "errors.txt")
+printer = Printer("../Tests/parser_test/parser_tree.txt", "../Tests/parser_test/errors.txt")

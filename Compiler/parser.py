@@ -6,6 +6,7 @@ with open("../Tests/parser_test/test1.txt") as f:
     start_char = ''
     # token_string, token_type, start_char, eof = get_next_token(f, start_char)
     line_num = 1
+    generator = CodeGenerator()
     this_state = state_1
     past_states = []
     root_node = Node(program, 1, None, program.name)
@@ -17,7 +18,7 @@ with open("../Tests/parser_test/test1.txt") as f:
         # print(this_state)
         # print(token_string, TokenType(token_type_value))
         this_state, is_token_moved, past_states, this_node = \
-            this_state.next_state(past_states, token_string, TokenType(token_type_value), this_node, eof, line_num)
+            this_state.next_state(past_states, token_string, TokenType(token_type_value), this_node, eof, line_num, generator)
         if this_state is None:
             break
         if is_token_moved and not eof:
@@ -34,3 +35,11 @@ with open("../Tests/parser_test/test1.txt") as f:
             isEnded = True
     printer.print_tree(root_node)
     scan_errors()
+    print("semantic_stack:", generator.semantic_stack)
+    print("var_scope_stack:", generator.var_scope_stack)
+    print("arr_scope_stack:", generator.arr_scope_stack)
+    print("scope:", generator.scope)
+    print("scope_id:", generator.scope_id)
+    print("data_ptr:", generator.data_ptr)
+    print("program_ptr:", generator.program_ptr)
+    print("program_block", generator.program_block)

@@ -215,7 +215,7 @@ f_out_errors = None
 def scan():
     global f_out_results, f_out_errors
     f_out_results = open(path_result_scanner, "w+")
-    f_out_errors = open("errors.txt", "a+")
+    f_out_errors = open("../Tests/parser_test/errors.txt", "a+")
     with open("../Tests/parser_test/test1.txt") as f:
         start_char = ''
         token_type = 0

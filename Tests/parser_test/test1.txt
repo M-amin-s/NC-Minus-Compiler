@@ -1,17 +1,13 @@
+int b;
+int foo(void){
+    int f;
+    int fff[2];
+    return f;
+}
+int arr[3];
 void main(void){
-    int a = 0;
-    //comment2
-    a = 2 + 2;
-    a = a + 3;
-    cde = a;
-    if (b /* comment */ == 3) {
-        a = 3;
-        cd = -7;
-    }
+    if (b < 0)
+        return 0;
     else
-    {
-        b = a < cde;
-        {cde = 2;
-    }}
-    return;
+        return 1;
 }
