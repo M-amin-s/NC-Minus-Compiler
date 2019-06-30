@@ -1,5 +1,5 @@
 DONE:
-Program -> Declaration_list eof #EXIT
+Program -> #jmp_to_main Declaration_list eof #EXIT
 Declaration_list -> Declaration Declaration_list | epsilon
 Declaration -> Type_specifier #pid_dec id Var_Fun_declaration
 Var_declaration_1 -> #var_dec_finish ; | [ #arr_len_dec num ] #arr_dec_finish ;
@@ -34,8 +34,9 @@ Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1
 Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1
 
 
+
 TODO:
-Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt
+Var_Fun_declaration -> Var_declaration_1 | #pop_addr_func ( Params ) Compound_stmt
 Params -> void Params_1 | Params_2
 Params_1 -> Param_list_void | epsilon
 Param_list_void -> Param_void Param_list_1

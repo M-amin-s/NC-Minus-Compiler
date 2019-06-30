@@ -41,9 +41,9 @@ class CodeGenerator:
         self.arr_scope_stack = []
 
         # a list of 4 pairs with the scope(list) in which the functions were defined at, the function name,
-        # the argument types & names & address or value and return type
-        # e.g. func_scope_stack=[('add_func', [0,1], [('a','int'), ('b','int')], 'int'), ('main', [0], [], 'void')]
-        # must include ('main', [0], [], 'void') otherwise print error: "main function not found"
+        # the argument types & names & address or value and return type e.g. func_scope_stack=[('add_func', [('a',
+        # 500','int'), ('b',504','array')], 508, 5), ('main' [], , ?)] must include ('main', [],
+        # 'void') otherwise print error: "main function not found"
         self.func_scope_stack = [('output', [0], [('a', LangFunc.INT.name)], LangFunc.VOID.name)]
 
         # the array of (at most) 4 element pairs which needs to be filled with instructions

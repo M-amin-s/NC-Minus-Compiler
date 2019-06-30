@@ -169,17 +169,17 @@ program_ptr += 1
 end
 
 #addop_p begin:
-ss.push(#0)
+ss.push('ADD')
 end
 
 #addop_m begin:
-ss.push(#1)
+ss.push('SUB')
 end
 
 #addop begin:
-if (ss[top_ss-1] == 0)
+if (ss[top_ss-1] == 'ADD')
     program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
-elif (ss[top_ss-1] == 1)
+elif (ss[top_ss-1] == 'SUB')
     program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
 ss.pop(3)
 ss.push(tmp_ptr)
@@ -188,17 +188,17 @@ program_ptr += 1
 end
 
 #relop_lt begin:
-ss.push(#0)
+ss.push('LT')
 end
 
 #relop_eq begin:
-ss.push(#1)
+ss.push('EQ')
 end
 
 #relop begin:
-if (ss[top_ss-1] == 0)
+if (ss[top_ss-1] == 'LT')
     program_block[program_ptr] <- (LT, ss[top-2], ss[top], tmp_ptr)
-elif (ss[top_ss-1] == 1)
+elif (ss[top_ss-1] == 'EQ')
     program_block[program_ptr] <- (EQ, ss[top], ss[top-2], tmp_ptr)
 ss.pop(3)
 ss.push(tmp_ptr)
@@ -217,6 +217,10 @@ end
 #push_num_exp begin:
 num <- get_input
 ss.push(num)
+end
+
+#jmp_to_main begin:
+
 end
 
 #call_function begin:
