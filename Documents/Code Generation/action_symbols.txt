@@ -1,6 +1,5 @@
-Program -> Declaration_list eof
-
 DONE:
+Program -> Declaration_list eof #EXIT
 Declaration_list -> Declaration Declaration_list | epsilon
 Declaration -> Type_specifier #pid_dec id Var_Fun_declaration
 Var_declaration_1 -> #var_dec_finish ; | [ #arr_len_dec num ] #arr_dec_finish ;
@@ -12,7 +11,27 @@ Switch_stmt -> #switch_jmpu_ignore #switch_jmpu_end  #switch_label_ignore switch
 Case_stmts -> Case_stmt Case_stmts | epsilon
 Case_stmt -> case #push_ss num #switch_jmpc_skip : Statement_list #switch_jmpu_start #switch_label_skip
 Default_stmt -> default : Statement_list | epsilon
-
+Expression -> #pid_ref id Expression_id_1 | Expression_id_2
+Expression_id_1 -> Var_1 Expression_ob_1 | Simple_expression_id_ob_2
+Expression_id_2 -> Additive_expression_id_2 Simple_expression_1
+Additive_expression_id_2 -> Term_id_2 Additive_expression_1
+Term_id_2 -> Signed_factor_id_2 Term_1
+Signed_factor_id_2 -> Factor_id_1 | + Factor | - Factor #negate_factor
+Factor_id_1 -> ( Expression ) | #push_num_exp num
+Var_1 -> [ Expression ] #arr_ref | epsilon
+Expression_ob_1 -> = Expression #assignment | Simple_expression_id_ob_1
+Simple_expression_id_ob_1 -> Additive_expression_id_ob_1 Simple_expression_1
+Additive_expression_id_ob_1 -> Term_1 Additive_expression_1
+Simple_expression_1 -> Relop Additive_expression #relop | epsilon
+Additive_expression_1 -> Addop Additive_expression #addop | epsilon
+Term_1 -> * Term #multop | epsilon
+Relop -> #relop_lt < | #relop_eq ==
+Addop -> #addop_p + | #addop_m -
+Additive_expression -> Term Additive_expression_1
+Term -> Signed_factor Term_1
+Signed_factor -> Factor | + Factor | - Factor #negate_factor
+Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1
+Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1
 
 
 TODO:
@@ -34,36 +53,16 @@ Return_stmt -> return Return_stmt_1
 Return_stmt_1 -> ; | Expression ;
 
 
-Expression -> id Expression_id_1 | Expression_id_2
-Simple_expression_id_1 -> Additive_expression_id_1 Simple_expression_1
-Additive_expression_id_1 -> Term_id_1 Additive_expression_1
-Term_id_1 -> Signed_factor_id Term_1
-Signed_factor_id -> Var_Call
-Expression_id_1 -> Var_1 Expression_ob_1 | Simple_expression_id_ob_2
-Expression_ob_1 -> = Expression | Simple_expression_id_ob_1
-Simple_expression_id_ob_1 -> Additive_expression_id_ob_1 Simple_expression_1
-Additive_expression_id_ob_1 -> Term_1 Additive_expression_1
-Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1
-Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1
-Term_id_ob_2 -> ( Args ) Term_1
-Var_1 -> [ Expression ] | epsilon
-Simple_expression -> Additive_expression Simple_expression_1
-Simple_expression_1 -> Relop Additive_expression | epsilon
-Relop -> < | ==
-Additive_expression -> Term Additive_expression_1
-Additive_expression_1 -> Addop Additive_expression | epsilon
-Addop -> + | -
-Term -> Signed_factor Term_1
-Term_1 -> * Term | epsilon
-Signed_factor -> Factor | + Factor | - Factor
-Factor -> ( Expression ) | id Var_Call | num
+TODO: push one value in ss at the end of Expression & Var_Call & #call_function
+TODO: id Var_Call
+Factor -> ( Expression ) | id Var_Call | #push_num_exp num
+TODO: Term_id_ob_2 & #call_function
+Term_id_ob_2 -> ( Args ) #call_function Term_1
+
+
+
+
 Var_Call -> ( Args ) | Var_1
-Call -> id ( Args )
 Args -> Arg_list | epsilon
 Arg_list -> Expression Arg_list_1
 Arg_list_1 -> , Arg_list | epsilon
-Expression_id_2 -> Additive_expression_id_2 Simple_expression_1
-Additive_expression_id_2 -> Term_id_2 Additive_expression_1
-Term_id_2 -> Signed_factor_id_2 Term_1
-Signed_factor_id_2 -> Factor_id_1 | + Factor | - Factor
-Factor_id_1 -> ( Expression ) | num

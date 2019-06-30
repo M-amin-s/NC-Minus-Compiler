@@ -133,7 +133,96 @@ program_block[ss[top_ss]] <- (JPF, ss[top_ss - 1], program_ptr,)
 pop(2)
 end
 
+--------------------------------------------------------------------------
+EXPRESSIONS:
+
 #push_ss begin:
 num <- get_input
 ss.push(num)
+end
+
+#pid_ref begin:
+name <- get_input
+address <- search in var_scope_stack and arr_scope_stack for name and check if it's in the same scope or outer scopes,
+and get the address
+ss.push(address)
+end
+
+#arr_ref begin:
+element_addr <- 4*ss[top_ss] + ss[top_ss-1]
+ss.pop(2)
+ss.push(element_addr)
+end
+
+#assignment begin:
+program_block[program_ptr] <- (ASSIGN, ss[top_ss], ss[top_ss - 1),)
+program_ptr += 1
+pop(2)
+end
+
+#multop begin:
+program_block[program_ptr] <- (MULT, ss[top_ss], ss[top_ss - 1], tmp_ptr)
+ss.pop(2)
+ss.push(tmp_ptr)
+tmp_ptr += 4
+program_ptr += 1
+end
+
+#addop_p begin:
+ss.push(#0)
+end
+
+#addop_m begin:
+ss.push(#1)
+end
+
+#addop begin:
+if (ss[top_ss-1] == 0)
+    program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
+elif (ss[top_ss-1] == 1)
+    program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
+ss.pop(3)
+ss.push(tmp_ptr)
+tmp_ptr += 4
+program_ptr += 1
+end
+
+#relop_lt begin:
+ss.push(#0)
+end
+
+#relop_eq begin:
+ss.push(#1)
+end
+
+#relop begin:
+if (ss[top_ss-1] == 0)
+    program_block[program_ptr] <- (LT, ss[top-2], ss[top], tmp_ptr)
+elif (ss[top_ss-1] == 1)
+    program_block[program_ptr] <- (EQ, ss[top], ss[top-2], tmp_ptr)
+ss.pop(3)
+ss.push(tmp_ptr)
+tmp_ptr += 4
+program_ptr += 1
+end
+
+#negate_factor begin:
+program_block[program_ptr] <- (SUB, ss[top], #0, tmp_ptr)
+ss.pop(1)
+ss.push(tmp_ptr)
+tmp_ptr += 4
+program_ptr += 1
+end
+
+#push_num_exp begin:
+num <- get_input
+ss.push(num)
+end
+
+#call_function begin:
+
+end
+
+#EXIT begin:
+
 end
