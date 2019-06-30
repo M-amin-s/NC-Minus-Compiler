@@ -32,21 +32,20 @@ Term -> Signed_factor Term_1
 Signed_factor -> Factor | + Factor | - Factor #negate_factor
 Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1
 Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1
-
-
-
-TODO:
-Var_Fun_declaration -> Var_declaration_1 | #pop_addr_func ( Params ) Compound_stmt
-Params -> void Params_1 | Params_2
-Params_1 -> Param_list_void | epsilon
+Var_Fun_declaration -> Var_declaration_1 | #func_def ( Params ) #save_func_begin Compound_stmt #end_func
+Params -> #ptype_void_dec void Params_1 | Params_2
+Params_1 -> Param_list_void | #no_params epsilon
 Param_list_void -> Param_void Param_list_1
-Param_void -> id Param_1
+Param_void -> #pid_param_def id Param_1
 Params_2 -> Param_void_1 Param_list_1
 Param_void_1 -> int id Param_1
 Param_list -> Param Param_list_1
 Param_list_1 -> , Param_list | epsilon
-Param -> Type_specifier id Param_1
-Param_1 -> [ ] | epsilon
+Param -> Type_specifier #pid_param_def id Param_1
+Param_1 -> #array_param_def [ ] | #var_param_def epsilon
+
+
+TODO:
 Statement_list -> Statement Statement_list | epsilon
 Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt
 Expression_stmt -> Expression ; | continue ; | break ; | ;

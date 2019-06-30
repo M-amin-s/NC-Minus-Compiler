@@ -59,7 +59,7 @@ program_ptr += 1
 end
 
 #if_label_else begin:
-program_block[ss[top-1]] <- (JPF, ss[top_ss-2], program_ptr,)
+program_block[ss[top-1]] <- (JPF, ss[ss_top-2], program_ptr,)
 end
 
 #if_label_end begin:
@@ -81,11 +81,11 @@ program_ptr += 1
 end
 
 #while_jmpu_start begin:
-program_block[program_ptr] <- (JP, ss[top_ss-2],,)
+program_block[program_ptr] <- (JP, ss[ss_top-2],,)
 end
 
 #while_label_end begin:
-program_block[ss[top]] <- (JPF, ss[top_ss-1], program_ptr + 1,)
+program_block[ss[top]] <- (JPF, ss[ss_top-1], program_ptr + 1,)
 end
 
 SWITCH CASE EXPRESSIONS:
@@ -108,14 +108,14 @@ program_block[program_ptr - 2] <- (JP, program_ptr,,)
 end
 
 #switch_label_end begin:
-program_block[ss[top_ss - 1]] <- (JP, program_ptr,,)
+program_block[ss[ss_top - 1]] <- (JP, program_ptr,,)
 pop(2)
 end
 
 #switch_jmpc_skip begin:
 t <- temp_ptr
 temp_ptr += 4
-program_block[program_ptr] <- (EQ, ss[top_ss], ss[top_ss - 1], t)
+program_block[program_ptr] <- (EQ, ss[ss_top], ss[ss_top - 1], t)
 pop(1)
 ss.push(t)
 program_ptr += 1
@@ -124,12 +124,12 @@ program_ptr += 1
 end
 
 #switch_jmpu_start begin:
-program_block[program_ptr] <- (JP, ss[top_ss - 3],,)
+program_block[program_ptr] <- (JP, ss[ss_top - 3],,)
 program_ptr += 1
 end
 
 #switch_label_skip begin:
-program_block[ss[top_ss]] <- (JPF, ss[top_ss - 1], program_ptr,)
+program_block[ss[ss_top]] <- (JPF, ss[ss_top - 1], program_ptr,)
 pop(2)
 end
 
@@ -149,19 +149,19 @@ ss.push(address)
 end
 
 #arr_ref begin:
-element_addr <- 4*ss[top_ss] + ss[top_ss-1]
+element_addr <- 4*ss[ss_top] + ss[ss_top-1]
 ss.pop(2)
 ss.push(element_addr)
 end
 
 #assignment begin:
-program_block[program_ptr] <- (ASSIGN, ss[top_ss], ss[top_ss - 1),)
+program_block[program_ptr] <- (ASSIGN, ss[ss_top], ss[ss_top - 1),)
 program_ptr += 1
 pop(2)
 end
 
 #multop begin:
-program_block[program_ptr] <- (MULT, ss[top_ss], ss[top_ss - 1], tmp_ptr)
+program_block[program_ptr] <- (MULT, ss[ss_top], ss[ss_top - 1], tmp_ptr)
 ss.pop(2)
 ss.push(tmp_ptr)
 tmp_ptr += 4
@@ -177,10 +177,10 @@ ss.push('SUB')
 end
 
 #addop begin:
-if (ss[top_ss-1] == 'ADD')
-    program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
-elif (ss[top_ss-1] == 'SUB')
-    program_block[program_ptr] <- (ADD, ss[top], ss[top-2], tmp_ptr)
+if (ss[ss_top-1] == 'ADD')
+    program_block[program_ptr] <- (ADD, ss[ss_top], ss[ss_top-2], tmp_ptr)
+elif (ss[ss_top-1] == 'SUB')
+    program_block[program_ptr] <- (ADD, ss[ss_top], ss[ss_top-2], tmp_ptr)
 ss.pop(3)
 ss.push(tmp_ptr)
 tmp_ptr += 4
@@ -196,10 +196,10 @@ ss.push('EQ')
 end
 
 #relop begin:
-if (ss[top_ss-1] == 'LT')
-    program_block[program_ptr] <- (LT, ss[top-2], ss[top], tmp_ptr)
-elif (ss[top_ss-1] == 'EQ')
-    program_block[program_ptr] <- (EQ, ss[top], ss[top-2], tmp_ptr)
+if (ss[ss_top-1] == 'LT')
+    program_block[program_ptr] <- (LT, ss[ss_top-2], ss[ss_top], tmp_ptr)
+elif (ss[ss_top-1] == 'EQ')
+    program_block[program_ptr] <- (EQ, ss[ss_top], ss[ss_top-2], tmp_ptr)
 ss.pop(3)
 ss.push(tmp_ptr)
 tmp_ptr += 4
@@ -207,7 +207,7 @@ program_ptr += 1
 end
 
 #negate_factor begin:
-program_block[program_ptr] <- (SUB, ss[top], #0, tmp_ptr)
+program_block[program_ptr] <- (SUB, ss[ss_top], #0, tmp_ptr)
 ss.pop(1)
 ss.push(tmp_ptr)
 tmp_ptr += 4
@@ -218,15 +218,63 @@ end
 num <- get_input
 ss.push(num)
 end
-
+TODO:
 #jmp_to_main begin:
 
 end
-
+TODO:
 #call_function begin:
 
 end
-
+TODO:
 #EXIT begin:
 
+end
+
+#func_def begin:
+ss.pop(1)
+data_ptr -= 4
+if (ss[top-2] == 'int'):
+    func_scope_stack.push((ss[ss_top-1], ss[ss_top], [], data_ptr, ))
+    data_ptr += 4
+elif (ss[top-2] == 'void'):
+    func_scope_stack.push((ss[ss_top-1], ss[ss_top], [], , ))
+ss.pop(3)
+end
+
+#save_func_begin begin:
+ss.push(program_ptr)
+program_ptr += 1
+func_scope_stack[fss_top][4] = program_ptr
+end
+
+#end_func begin:
+program_block[ss[ss_top]] <- (JP, program_ptr,,)
+ss.pop(1)
+end
+
+#no_params begin:
+ss.pop(1)
+end
+
+#pid_param_def begin:
+name <- get_input
+ss.push(name)
+func_scope <- scope.push(scope_id)
+ss.push(func_scope)
+addr <- data_ptr
+ss.push(addr)
+data_ptr += 4
+end
+
+#array_param_def begin:
+func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'array'))
+arr_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top], ss[ss_top-1], ))
+ss.pop(4)
+end
+
+#var_param_def begin:
+func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'num'))
+var_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top], ss[ss_top-1]))
+ss.pop(4)
 end
