@@ -40,10 +40,10 @@ class CodeGenerator:
         # e.g. arr_scope_stack=[('x_arr', [0,1,2,4], 'int', 540, 564)]
         self.arr_scope_stack = []
 
-        # a list of 4 pairs with the scope(list) in which the functions were defined at, the function name,
-        # the argument types & names & address or value and return type e.g. func_scope_stack=[('add_func', [],
-        # [('a', 500','num'), ('b',504','array')], 508, 5), ('main',[], [], , ?)] must include ('main',[], [], ,
-        # ?) otherwise print error: "main function not found"
+        # a list of 5 pairs with the scope(list) in which the functions were defined at, the function name,
+        # the argument types & names & address, return type e.g. func_scope_stack=[('add_func', [0,1],
+        # [('a', 500','num','void'), ('b',504','array','int')], 508, 5), ('main',[], [], , ?)] must include ('main',
+        # [], [], , ?) otherwise print error: "main function not found"
         # TODO: change fss initialization of output
         self.func_scope_stack = [('output', [0], [('a', LangFunc.INT.name)], LangFunc.VOID.name)]
 

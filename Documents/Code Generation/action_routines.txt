@@ -143,15 +143,24 @@ end
 
 #pid_ref begin:
 name <- get_input
-address <- search in var_scope_stack and arr_scope_stack for name and check if it's in the same scope or outer scopes,
-and get the address
-ss.push(address)
+ss.push(name)
 end
 
 #arr_ref begin:
-element_addr <- 4*ss[ss_top] + ss[ss_top-1]
+name <- ss[top-1]
+address <- search in arr_scope_stack for name and check if it's in the same scope or outer scopes,
+and get the address
+element_addr <- 4*ss[ss_top] + address
 ss.pop(2)
 ss.push(element_addr)
+end
+
+#var_ref begin:
+name <- ss[top]
+address <- search in var_scope_stack for name and check if it's in the same scope or outer scopes,
+and get the address
+ss.pop(1)
+ss.push(address)
 end
 
 #assignment begin:
@@ -223,10 +232,6 @@ TODO:
 
 end
 TODO:
-#call_function begin:
-
-end
-TODO:
 #EXIT begin:
 
 end
@@ -268,13 +273,54 @@ data_ptr += 4
 end
 
 #array_param_def begin:
-func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'array'))
-arr_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top], ss[ss_top-1], ))
+func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'array', ss[ss_top-3]))
+arr_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top], ss[ss_top-1],))
 ss.pop(4)
 end
 
 #var_param_def begin:
-func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'num'))
+func_scope_stack[fss_top][2].append((ss[ss_top-2], ss[ss_top], 'num', ss[ss_top-3]))
 var_scope_stack.push((ss[ss_top-2], ss[ss_top-1], ss[ss_top], ss[ss_top-1]))
 ss.pop(4)
+end
+
+#assign_return begin:
+out <- func_scope_stack[fss_top][3]
+program_block[program_ptr] <- (ASSIGN, ss[top], out,)
+ss.pop(1)
+end
+
+#func_call_name begin:
+func_name <- get_input
+ss.push(func_name)
+end
+
+
+#swap_name begin:
+name <- ss[top_ss - 1]
+arg <- ss[top_ss]
+pop(2)
+ss.push(arg)
+ss.push(name)
+end
+
+#call_function begin:
+func_name <- ss[top_ss]
+search in func_scope_stack for 'func_name' and put it in func
+func <- ....
+pop(1)
+for(i=len(func[2]); i>0; i--):
+    addr <- func[2][i][1]
+    type <- func[2][i][2]
+    if(type == 'num'):
+        program_block[program_ptr] <- (ASSIGN, ss[top], addr,)
+    elif(type == 'array'):
+        program_block[program_ptr] <- (ASSIGN, @ss[top], addr,)
+    program_ptr += 1
+    pop(1)
+func_ptr <- func[4]
+program_block[program_ptr] <- (JP, func_ptr,,)
+program_ptr += 1
+result <- func[3]
+ss.push[result]
 end
