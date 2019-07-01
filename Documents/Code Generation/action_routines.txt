@@ -189,7 +189,7 @@ end
 if (ss[ss_top-1] == 'ADD')
     program_block[program_ptr] <- (ADD, ss[ss_top], ss[ss_top-2], tmp_ptr)
 elif (ss[ss_top-1] == 'SUB')
-    program_block[program_ptr] <- (ADD, ss[ss_top], ss[ss_top-2], tmp_ptr)
+    program_block[program_ptr] <- (SUB, ss[ss_top], ss[ss_top-2], tmp_ptr)
 ss.pop(3)
 ss.push(tmp_ptr)
 tmp_ptr += 4

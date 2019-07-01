@@ -24,7 +24,8 @@ with open("../Tests/parser_test/test1.txt") as f:
         if is_token_moved and not eof:
             token_string, token_type_value, start_char, eof = get_next_token(f, start_char)
             while (TokenType(token_type_value) == TokenType.COMMENT or
-                           TokenType(token_type_value) == TokenType.WHITESPACE) and not eof:
+                           TokenType(token_type_value) == TokenType.WHITESPACE or
+                   TokenType(token_type_value) == TokenType.NOT_A_TYPE) and not eof:
                 if ord(token_string[0]) == 10 and TokenType(token_type_value) == TokenType.WHITESPACE:
                     line_num += 1
                 token_string, token_type_value, start_char, eof = get_next_token(f, start_char)

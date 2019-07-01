@@ -113,7 +113,7 @@ def is_whitespace(str):
     for c in str:
         if state == 0 and is_char_whitespace(c):
             state = 1
-        if state == 1 and not is_char_whitespace(c):
+        elif state == 1 and not is_char_whitespace(c):
             state = 0
     if state == 1:
         return True
@@ -159,6 +159,9 @@ def get_next_token(file, start_char):
             if primaries[m_token_type] < primaries[token_type_next]:
                 token_type_next = 0
         if (token_type_next == 0 or token_type_next == 7) and is_accepted:
+            end_char = c
+            break
+        if token_type_next == 0 and m_token_type == 0:
             end_char = c
             break
     eof = token_type_next == 7
@@ -207,7 +210,7 @@ def write_token_in_file(write_token_type, write_string):
 
 types = ["NOT A TYPE", "NUM", "ID", "KEYWORD", "SYMBOL", "COMMENT", "WHITESPACE"]
 primaries = [7, 4, 5, 2, 3, 1, 6]
-path_result_scanner = "scanner.txt"
+path_result_scanner = "../Tests/parser_test/scanner.txt"
 f_out_results = None
 f_out_errors = None
 
@@ -243,5 +246,4 @@ def scan():
 
 def scan_errors():
     scan()
-    os.remove(path_result_scanner)
-
+    # os.remove(path_result_scanner)

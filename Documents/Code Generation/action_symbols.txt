@@ -47,7 +47,7 @@ Statement_list -> Statement Statement_list | epsilon
 Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt
 Return_stmt -> return Return_stmt_1
 Return_stmt_1 -> ; | Expression ; #assign_return
-Var_Call -> ( Args ) #call_function | Var_1
+Var_Call -> ( Args ) #call_function | Var_1 TODO: some are ended in a same state but one has action symbol and other doesn't
 Args -> Arg_list | epsilon
 Arg_list -> Expression #swap_name Arg_list_1
 Arg_list_1 -> , Arg_list | epsilon

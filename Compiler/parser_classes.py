@@ -114,6 +114,8 @@ class State:
         self.edges[epsilon_edge_index], self.edges[-1] = self.edges[-1], self.edges[epsilon_edge_index]
 
     def next_state(self, past_states, token_string, token_type, this_node, eof, line_num, generator):
+        if token_string == "}":
+            print("hello")
         if len(self.edges) == 1 and isinstance(self.edges[0], Terminal) and \
                         self.edges[0].label.token_type == TokenType.EOF and not eof:
             printer.print_error("%d: Syntax Error! Malformed Input" % line_num)
