@@ -1,4 +1,4 @@
 int l;
 int z[10];
-int zz[l];
-void z1[];
+int zz[5];
+void z1[4];

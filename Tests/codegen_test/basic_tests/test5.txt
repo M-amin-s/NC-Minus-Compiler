@@ -1,7 +1,9 @@
 int x;
 int y;
-x = 0;
-if (x)
-    y = 5;
-else
-    y = 10;
+int main(void){
+    x = 0;
+    if (x)
+        y = 5;
+    else
+        y = 10;
+}

@@ -1,7 +1,7 @@
 from Compiler.parser_make_data import *
 from Compiler.scanner import get_next_token, TokenType, scan_errors
 
-with open("../Tests/parser_test/test1.txt") as f:
+with open("../Tests/codegen_test/basic_tests/test5.txt") as f:
     eof = False
     start_char = ''
     # token_string, token_type, start_char, eof = get_next_token(f, start_char)
@@ -14,9 +14,9 @@ with open("../Tests/parser_test/test1.txt") as f:
     isEnded = False
     token_string, token_type_value, start_char, eof = get_next_token(f, start_char)
     while this_state != state_2 or len(past_states) > 0:
-        # print(this_node)
-        # print(this_state)
-        # print(token_string, TokenType(token_type_value))
+        print(this_node)
+        print(this_state)
+        print(token_string, TokenType(token_type_value))
         this_state, is_token_moved, past_states, this_node = \
             this_state.next_state(past_states, token_string, TokenType(token_type_value), this_node, eof, line_num, generator)
         if this_state is None:
@@ -39,6 +39,7 @@ with open("../Tests/parser_test/test1.txt") as f:
     print("semantic_stack:", generator.semantic_stack)
     print("var_scope_stack:", generator.var_scope_stack)
     print("arr_scope_stack:", generator.arr_scope_stack)
+    print("func_scope_stack:", generator.func_scope_stack)
     print("scope:", generator.scope)
     print("scope_id:", generator.scope_id)
     print("data_ptr:", generator.data_ptr)

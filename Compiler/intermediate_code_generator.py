@@ -49,7 +49,7 @@ class CodeGenerator:
 
         # the array of (at most) 4 element pairs which needs to be filled with instructions
         # e.g. program_block=[('ADD', 500, 1000, 508), ('JPF', 512, 6, )]
-        self.program_block = []
+        self.program_block = [""]
 
         # compilation time stack to be used by compiler
         self.semantic_stack = []
@@ -89,12 +89,17 @@ class CodeGenerator:
 
 
 def call_code_gen(token_string, token_type, methods, generator):
+    if token_string == "example":
+        print("hello")
     if type(methods) is list:
         for i in range(len(methods)):
             method = methods[i]
             method(token_string, token_type, generator)
     else:
-        methods(token_string, token_type, generator)
+        try:
+            methods(token_string, token_type, generator)
+        except:
+            print("hello")
 
 
 def pid_dec(token_string, token_type, generator):
@@ -117,7 +122,7 @@ def var_dec_finish(token_string, token_type, generator):
 
 def arr_len_dec(token_string, token_type, generator):
     length = int(token_string)
-    generator.semantic_stack.append(length)
+    generator.semantic_stack.append("#" + str(length))
     generator.data_ptr += (length - 1) * 4
 
 
@@ -145,6 +150,7 @@ def enter_scope(token_string, token_type, generator):
 
 def exit_scope(token_string, token_type, generator):
     generator.scope.pop()
+    generator.scope_id = generator.scope[-1]
 
 
 def if_jmpc_else(token_string, token_type, generator: CodeGenerator):
@@ -161,12 +167,15 @@ def if_jmpu_end(token_string, token_type, generator: CodeGenerator):
 
 def if_label_else(token_string, token_type, generator: CodeGenerator):
     generator.program_block[generator.semantic_stack[-2]] = \
-        "(%s, %d, %d,)" % (LangFunc.JPF.name, generator.semantic_stack[-2], generator.program_ptr)
+        "(%s, %d, %d,)" % (LangFunc.JPF.name, generator.semantic_stack[-3], generator.program_ptr)
 
 
 def if_label_end(token_string, token_type, generator: CodeGenerator):
     generator.program_block[generator.semantic_stack[-1]] = \
-        "(%s, %d,,)" % (LangFunc.JP.name, generator.program_ptr)
+        "(%s, %d,,)" % (LangFunc.JP.name, generator.program_ptr + 1)
+    generator.semantic_stack.pop()
+    generator.semantic_stack.pop()
+    generator.semantic_stack.pop()
 
 
 def while_label_start(token_string, token_type, generator: CodeGenerator):
@@ -242,8 +251,7 @@ def switch_label_skip(token_string, token_type, generator: CodeGenerator):
 
 
 def push_ss(token_string, token_type, generator: CodeGenerator):
-    num = int(token_string)
-    generator.semantic_stack.append(num)
+    generator.semantic_stack.append("#" + token_string)
 
 
 def pid_ref(token_string, token_type, generator: CodeGenerator):
@@ -255,8 +263,10 @@ def arr_ref(token_string, token_type, generator: CodeGenerator):
     name = generator.semantic_stack[-2]
     arr = generator.search_arr_scope_stack(name)
     # TODO: CHECK SCOPE
-    address = arr[3]
-    element_addr = 4 * generator.semantic_stack[-1] + address
+    address = arr[2]
+    if isinstance(generator.semantic_stack[-1], str):
+        ss_top = int(generator.semantic_stack[-1][1:])
+    element_addr = 4 * ss_top + address
     generator.semantic_stack.pop()
     generator.semantic_stack.pop()
     generator.semantic_stack.append(element_addr)
@@ -271,15 +281,18 @@ def var_ref(token_string, token_type, generator: CodeGenerator):
 
 
 def assignment(token_string, token_type, generator: CodeGenerator):
-    generator.program_block[generator.program_ptr] = \
-        "(%s, %d, %d,)" % (LangFunc.ASSIGN.name, generator.semantic_stack[-1], generator.semantic_stack[-2])
+    try:
+        generator.program_block[generator.program_ptr] = \
+            "(%s, %s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(generator.semantic_stack[-2]))
+    except Exception as e:
+        print(e)
     generator.program_ptr += 1
     generator.program_block.append("")
     generator.semantic_stack.pop()
     generator.semantic_stack.pop()
 
 
-def multop(token_string, token_type, generator: CodeGenerator):
+def multopc(token_string, token_type, generator: CodeGenerator):
     generator.program_block[generator.program_ptr] = \
         "(%s, %d, %d, %d)" % (LangFunc.MULT.name, generator.semantic_stack[-1],
                               generator.semantic_stack[-2], generator.tmp_ptr)
@@ -293,11 +306,12 @@ def addop_m(token_string, token_type, generator: CodeGenerator):
     generator.semantic_stack.append(LangFunc.SUB)
 
 
-def addop(token_string, token_type, generator: CodeGenerator):
+def addopc(token_string, token_type, generator: CodeGenerator):
     semantic_stack = generator.semantic_stack
-    generator.program_block[generator.program_ptr] = \
-        "(%s, %d, %d, %d)" % (semantic_stack[-2].name, semantic_stack[-1],
-                              semantic_stack[-3], generator.tmp_ptr)
+    try:
+        generator.program_block[generator.program_ptr] = "(%s, %d, %d, %d)" % (semantic_stack[-2].name, semantic_stack[-1], semantic_stack[-3], generator.tmp_ptr)
+    except Exception as e:
+        print(e)
     for i in range(3):
         semantic_stack.pop()
     semantic_stack.append(generator.tmp_ptr)
@@ -314,7 +328,7 @@ def relop_eq(token_string, token_type, generator: CodeGenerator):
     generator.semantic_stack.append(LangFunc.EQ)
 
 
-def relop(token_string, token_type, generator: CodeGenerator):
+def relopc(token_string, token_type, generator: CodeGenerator):
     semantic_stack = generator.semantic_stack
     generator.program_block[generator.program_ptr] = \
         "(%s, %d, %d, %d)" % (semantic_stack[-2].name, semantic_stack[-1],
@@ -338,8 +352,7 @@ def negate_factor(token_string, token_type, generator: CodeGenerator):
 
 
 def push_num_exp(token_string, token_type, generator: CodeGenerator):
-    num = int(token_string)
-    generator.semantic_stack.append(num)
+    generator.semantic_stack.append("#"+token_string)
 
 
 def jmp_to_main(token_string, token_type, generator: CodeGenerator):
@@ -368,7 +381,9 @@ def func_def(token_string, token_type, generator: CodeGenerator):
 def save_func_begin(token_string, token_type, generator: CodeGenerator):
     generator.semantic_stack.append(generator.program_ptr)
     generator.program_ptr += 1
-    generator.func_scope_stack[-1][4] = generator.program_ptr
+    generator.program_block.append("")
+    mend_func = generator.func_scope_stack[-1]
+    generator.func_scope_stack[-1] = (mend_func[0], mend_func[1], mend_func[2], mend_func[3], generator.program_ptr)
 
 
 def end_func(token_string, token_type, generator: CodeGenerator):
@@ -384,8 +399,7 @@ def no_params(token_string, token_type, generator: CodeGenerator):
 def pid_param_def(token_string, token_type, generator: CodeGenerator):
     name = token_string
     generator.semantic_stack.append(name)
-    generator.scope.append(generator.scope_id)
-    func_scope = generator.scope
+    func_scope = generator.scope.copy()
     generator.semantic_stack.append(func_scope)
     addr = generator.data_ptr
     generator.semantic_stack.append(addr)
@@ -395,7 +409,7 @@ def pid_param_def(token_string, token_type, generator: CodeGenerator):
 def array_param_def(token_string, token_type, generator: CodeGenerator):
     ss = generator.semantic_stack
     generator.func_scope_stack[-1][2].append((ss[-3], ss[-1], 'array', ss[-4]))
-    generator.arr_scope_stack.append((ss[-3], ss[-2], ss[-1], ss[-2],))
+    generator.arr_scope_stack.append((ss[-3], ss[-2], ss[-1], ss[-4],))
     for i in range(4):
         ss.pop()
 
@@ -403,15 +417,20 @@ def array_param_def(token_string, token_type, generator: CodeGenerator):
 def var_param_def(token_string, token_type, generator: CodeGenerator):
     ss = generator.semantic_stack
     generator.func_scope_stack[-1][2].append((ss[-3], ss[-1], 'num', ss[-4]))
-    generator.var_scope_stack.append((ss[-3], ss[-2], ss[-1], ss[-2]))
+    generator.var_scope_stack.append((ss[-3], ss[-2], ss[-4], ss[-1]))
     for i in range(4):
         ss.pop()
 
 
 def assign_return(token_string, token_type, generator: CodeGenerator):
     out = generator.func_scope_stack[-1][3]
-    generator.program_block[generator.program_ptr] = \
-        "(%s, %d, %d,)" % (LangFunc.ASSIGN.name, generator.semantic_stack[-1], out)
+    try:
+        generator.program_block[generator.program_ptr] = \
+            "(%s, %s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(out))
+        generator.program_ptr += 1
+        generator.program_block.append("")
+    except Exception as e:
+        print(e)
     generator.semantic_stack.pop()
 
 
@@ -438,10 +457,10 @@ def call_function(token_string, token_type, generator: CodeGenerator):
         type = func[2][i][2]
         if type == 'num':
             generator.program_block[generator.program_ptr] = \
-                "(%s, %d, %d,)" % (LangFunc.ASSIGN.name, generator.semantic_stack[-1], addr)
+                "(%s, %s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
         elif type == 'array':
             generator.program_block[generator.program_ptr] = \
-                "(%s, @%d, %d,)" % (LangFunc.ASSIGN.name, generator.semantic_stack[-1], addr)
+                "(%s, @%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
         generator.program_ptr += 1
         generator.program_block.append("")
         generator.semantic_stack.pop()

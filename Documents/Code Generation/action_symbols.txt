@@ -38,7 +38,7 @@ Params_1 -> Param_list_void | #no_params epsilon
 Param_list_void -> Param_void Param_list_1
 Param_void -> #pid_param_def id Param_1
 Params_2 -> Param_void_1 Param_list_1
-Param_void_1 -> int id Param_1
+Param_void_1 -> #ptype_int_dec int id Param_1
 Param_list -> Param Param_list_1
 Param_list_1 -> , Param_list | epsilon
 Param -> Type_specifier #pid_param_def id Param_1

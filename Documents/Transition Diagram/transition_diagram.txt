@@ -10,7 +10,7 @@
 
 4. Var_Fun_declaration -> Var_declaration_1 | ( Params ) Compound_stmt.
 11 --- Var_declaration_1 ---> 15*
-11 --- ( ---> 12 --- Params ---> 13 --- ) ---> 14 --- Compound_stmt ---> 15*
+11 --- ( ---> 12 --- Params ---> 13 --- ) ---> 14 --- Compound_stmt --> 15_1 --- epsilon ---> 15*
 
 5. Var_declaration -> Type_specifier id Var_declaration_1.
 16 --- Type_specifier ---> 17 --- id ---> 18 --- Var_declaration_1 ---> 19*
@@ -129,7 +129,7 @@
 133 --- Simple_expression_id_ob_2 ---> 135*
 
 37. Expression_ob_1 -> = Expression | Simple_expression_id_ob_1.
-136 --- = ---> 137 --- Expression ---> 138*
+136 --- = ---> 137 --- Expression ---> 137_1 --- epsilon ---> 138*
 136 --- Simple_expression_id_ob_1 ---> 138*
 
 38. Simple_expression_id_ob_1 -> Additive_expression_id_ob_1 Simple_expression_1.
@@ -155,7 +155,7 @@
 160 --- Additive_expression ---> 161 --- Simple_expression_1 ---> 162*
 
 45. Simple_expression_1 -> Relop Additive_expression | EPSILON.
-163 --- Relop ---> 164 --- Additive_expression ---> 165*
+163 --- Relop ---> 164 --- Additive_expression ---> 164_1 --- epsilon ---> 165*
 163 --- EPSILON ---> 165*
 
 46. Relop -> < | ==.
@@ -166,7 +166,7 @@
 169 --- Term ---> 170 --- Additive_expression_1 ---> 171*
 
 48. Additive_expression_1 -> Addop Additive_expression | EPSILON.
-172 --- Addop ---> 173 --- Additive_expression ---> 174*
+172 --- Addop ---> 173 --- Additive_expression ---> 174_1 --- epsilon ---> 174*
 172 --- EPSILON ---> 174*
 
 49. Addop -> + | -.
@@ -177,13 +177,13 @@
 177 --- Signed_factor ---> 178 --- Term_1 ---> 179*
 
 51. Term_1 -> * Term | EPSILON.
-180 --- * ---> 181 --- Term ---> 182*
+180 --- * ---> 181 --- Term ---> 181_1 --- epsilon ---> 182*
 180 --- EPSILON ---> 182*
 
 52. Signed_factor -> Factor | + Factor | - Factor.
 183 --- Factor ---> 185*
 183 --- + ---> 184 --- Factor ---> 185*
-183 --- - ---> 184 --- Factor ---> 185*
+183 --- - ---> 184 --- Factor ---> 184_1 --- epsilon ---> 185*
 
 53. Factor -> ( Expression ) | id Var_Call | num.
 186 --- ( ---> 187 --- Expression ---> 188 --- ) ---> 190*
@@ -220,7 +220,7 @@
 62. Signed_factor_id_2 -> Factor_id_1 | + Factor | - Factor.
 217 --- Factor_id_1 ---> 219*
 217 --- + ---> 218 --- Factor ---> 219*
-217 --- - ---> 218 --- Factor ---> 219*
+217 --- - ---> 218 --- Factor ---> 218_1 --- epsilon ---> 219*
 
 63. Factor_id_1 -> ( Expression ) | num
 220 --- ( ---> 221 --- Expression ---> 222 --- ) ---> 223*
