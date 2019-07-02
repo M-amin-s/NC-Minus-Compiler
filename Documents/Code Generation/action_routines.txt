@@ -67,7 +67,6 @@ program_block[ss[top]] <- (JP, program_ptr,,)
 end
 
 EXPRESSION HANDLING:
-TODO: PUSH RESULT ON SS
 
 WHILE STATEMENTS:
 
@@ -150,7 +149,6 @@ TODO: I added exit_switch action routine
 in_switch = False
 end
 
---------------------------------------------------------------------------
 EXPRESSIONS:
 
 #push_ss begin:
@@ -244,14 +242,6 @@ end
 num <- get_input
 ss.push(num)
 end
-TODO:
-#jmp_to_main begin:
-
-end
-TODO:
-#EXIT begin:
-
-end
 
 #func_def begin:
 ss.pop(1)
@@ -341,7 +331,8 @@ program_ptr += 1
 result <- func[3]
 ss.push[result]
 end
-
+---------------------------------------------------------------------
+TODO: recently added
 #check_while begin:
 if(not in_while)
     print "No 'while' found for 'continue'"
@@ -350,4 +341,10 @@ end
 #check_for_while_switch begin:
 if(not in_while and not in_switch)
     print "No 'while' or 'switch' found for 'break'"
+end
+
+#jmp_to_main begin:
+main <- search for 'main' in function scope stack
+program_block[program_ptr] <- (JP, main[4],,)
+program_ptr += 1
 end
