@@ -1,7 +1,7 @@
 from Compiler.parser_make_data import *
 from Compiler.scanner import get_next_token, TokenType, scan_errors
 
-with open("../Tests/codegen_test/basic_tests/test5.txt") as f:
+with open("../Tests/codegen_test/basic_tests/test13.txt") as f:
     eof = False
     start_char = ''
     # token_string, token_type, start_char, eof = get_next_token(f, start_char)
@@ -36,6 +36,7 @@ with open("../Tests/codegen_test/basic_tests/test5.txt") as f:
             isEnded = True
     printer.print_tree(root_node)
     scan_errors()
+    jmp_to_main("", None, generator)
     print("semantic_stack:", generator.semantic_stack)
     print("var_scope_stack:", generator.var_scope_stack)
     print("arr_scope_stack:", generator.arr_scope_stack)

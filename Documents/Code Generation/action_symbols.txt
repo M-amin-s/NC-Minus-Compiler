@@ -1,5 +1,5 @@
 DONE:
-Program -> #jmp_to_main Declaration_list eof
+Program -> #save_main Declaration_list eof #jmp_to_main
 Declaration_list -> Declaration Declaration_list | epsilon
 Declaration -> Type_specifier #pid_dec id Var_Fun_declaration
 Var_declaration_1 -> #var_dec_finish ; | [ #arr_len_dec num ] #arr_dec_finish ;

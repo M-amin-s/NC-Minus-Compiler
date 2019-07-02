@@ -228,7 +228,7 @@ factor_id_1.set_follow([t_star, t_plus, t_minus, t_lower, t_double_equal, t_clos
 state_1 = State(1, program, is_first=True)
 state_2 = State(2, program)
 state_3 = State(3, program, is_end=True)
-state_1.add_edge(Edge(state_1, state_2, declaration_list))
+state_1.add_edge(Edge(state_1, state_2, declaration_list, codegen_method=save_main))
 state_2.add_edge(Edge(state_2, state_3, t_eof))
 program.set_transition_diagram(Transition_diagram([state_1, state_2, state_3], state_1))
 
@@ -449,7 +449,7 @@ state_86.add_edge(Edge(state_86, state_87, t_while))
 state_87.add_edge(Edge(state_87, state_88, t_open_parant, codegen_method=while_label_start))
 state_88.add_edge(Edge(state_88, state_89, expression))
 state_89.add_edge(Edge(state_89, state_90, t_close_parant))
-state_90.add_edge(Edge(state_90, state_91, statement))
+state_90.add_edge(Edge(state_90, state_91, statement, codegen_method=[while_jmpc_end]))
 iteration_stmt.set_transition_diagram(Transition_diagram([state_86, state_87, state_88, state_89, state_90, state_91], state_86))
 
 state_92 = State(92, return_stmt, is_first=True)
