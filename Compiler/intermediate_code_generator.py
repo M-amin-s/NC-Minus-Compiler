@@ -63,6 +63,12 @@ class CodeGenerator:
         # current address of temporary memory (increment by 4)
         self.tmp_ptr = 1000
 
+        # shows if program is inside a while loop
+        self.in_while = False
+
+        # shows if program is inside a switch loop
+        self.in_switch = False
+
     def search_arr_scope_stack(self, name):
         for arr in self.arr_scope_stack:
             if arr[0] == name:

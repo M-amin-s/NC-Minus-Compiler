@@ -87,6 +87,14 @@ end
 #while_label_end begin:
 program_block[ss[top]] <- (JPF, ss[ss_top-1], program_ptr + 1,)
 end
+TODO: I added enter_while action routine
+#enter_while begin:
+in_while = True
+end
+TODO: I added exit_while action routine
+#exit_while begin:
+in_while = False
+end
 
 SWITCH CASE EXPRESSIONS:
 
@@ -131,6 +139,15 @@ end
 #switch_label_skip begin:
 program_block[ss[ss_top]] <- (JPF, ss[ss_top - 1], program_ptr,)
 pop(2)
+end
+
+TODO: I added enter_switch action routine
+#enter_while begin:
+in_switch = True
+end
+TODO: I added exit_switch action routine
+#exit_while begin:
+in_switch = False
 end
 
 --------------------------------------------------------------------------
@@ -323,4 +340,14 @@ program_block[program_ptr] <- (JP, func_ptr,,)
 program_ptr += 1
 result <- func[3]
 ss.push[result]
+end
+
+#check_while begin:
+if(not in_while)
+    print "No 'while' found for 'continue'"
+end
+
+#check_for_while_switch begin:
+if(not in_while and not in_switch)
+    print "No 'while' or 'switch' found for 'break'"
 end
