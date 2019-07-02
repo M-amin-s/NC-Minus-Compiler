@@ -1,0 +1,20 @@
+int add (int a, int b) {
+    return a + b;
+}
+
+int example (int a[]){
+    return a[1];
+}
+
+int result1;
+int result2;
+int result3;
+int x;
+int y;
+int z[5];
+x = 10;
+y = 12;
+z[1] = 20;
+result1 = add(x, y);
+result2 = add(10, 12);
+result3 = example(z);

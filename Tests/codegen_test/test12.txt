@@ -1,0 +1,6 @@
+int x;
+int y;
+int z;
+x = 17;
+y = -x;
+z = +x;
