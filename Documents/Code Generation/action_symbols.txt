@@ -1,4 +1,3 @@
-DONE:
 Program -> #save_main Declaration_list eof #jmp_to_main
 Declaration_list -> Declaration Declaration_list | epsilon
 Declaration -> Type_specifier #pid_dec id Var_Fun_declaration
@@ -6,8 +5,6 @@ Var_declaration_1 -> #var_dec_finish ; | [ #arr_len_dec num ] #arr_dec_finish ;
 Type_specifier -> #ptype_int_dec int | #ptype_void_dec void
 Compound_stmt -> { #enter_scope Declaration_list Statement_list } #exit_scope
 Selection_stmt -> if ( Expression ) #if_jmpc_else Statement #if_jmpu_end #if_label_else else Statement #if_label_end
-
-
 Case_stmts -> Case_stmt Case_stmts | epsilon
 Case_stmt -> case #push_ss num #switch_jmpc_skip : Statement_list #switch_jmpu_start #switch_label_skip
 Default_stmt -> default : Statement_list | epsilon
@@ -34,6 +31,8 @@ Simple_expression_id_ob_2 -> Additive_expression_id_ob_2 Simple_expression_1
 Additive_expression_id_ob_2 -> Term_id_ob_2 Additive_expression_1
 Var_Fun_declaration -> Var_declaration_1 | #func_def ( Params ) #save_func_begin Compound_stmt #end_func
 Params -> #ptype_void_dec void Params_1 | Params_2
+Term_id_ob_2 -> #push_num_of_args ( Args ) #call_function Term_1
+Var_Call -> #push_num_of_args ( Args ) #call_function | Var_1
 Params_1 -> Param_list_void | #no_params epsilon
 Param_list_void -> Param_void Param_list_1
 Param_void -> #pid_param_def id Param_1
@@ -46,17 +45,14 @@ Param_1 -> #array_param_def [ ] | #var_param_def epsilon
 Statement_list -> Statement Statement_list | epsilon
 Statement -> Expression_stmt | Compound_stmt | Selection_stmt | Iteration_stmt | Return_stmt | Switch_stmt
 Return_stmt -> return Return_stmt_1
-Return_stmt_1 -> ; | Expression ; #assign_return
-Var_Call -> ( Args ) #call_function | Var_1 TODO: some are ended in a same state but one has action symbol and other doesn't
 Args -> Arg_list | epsilon
 Arg_list -> Expression #swap_name Arg_list_1
 Arg_list_1 -> , Arg_list | epsilon
-Term_id_ob_2 -> ( Args ) #call_function Term_1
 Factor -> ( Expression ) | #func_call_name id Var_Call | #push_num_exp num
-
-TODO: I added #enter_while & #exit_while action symbol
 Iteration_stmt -> while #while_label_start ( Expression ) #while_jmpc_end #enter_while Statement #while_jmpu_start #while_label_end #exit_while
-TODO: I added #enter_switch & #exit_switch action symbol
 Switch_stmt -> #switch_jmpu_ignore #switch_jmpu_end  #switch_label_ignore switch ( Expression ) { #enter_switch Case_stmts Default_stmt #exit_switch } #switch_label_end
-TODO: I added #check_for_while action symbol
 Expression_stmt -> Expression ; | continue ; #check_for_while | break ; #check_for_while_switch | ;
+
+
+TODO: I added jump_out_of_func
+Return_stmt_1 -> ; #jump_out_of_func | Expression ; #assign_return

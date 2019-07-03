@@ -69,22 +69,51 @@ class CodeGenerator:
         # shows if program is inside a switch loop
         self.in_switch = False
 
+    def check_scope_definitions(self, scope):
+        currnet_scope = self.scope
+        index = 0
+        correct = True
+        if len(currnet_scope) < len(scope):
+            correct = False
+        else:
+            while index < len(scope):
+                if len(scope) == index or len(currnet_scope) == index:
+                    break
+                elif scope[index] == currnet_scope[index]:
+                    index += 1
+                elif scope[index] != currnet_scope[index]:
+                    correct = False
+        return correct
+
     def search_arr_scope_stack(self, name):
         for arr in self.arr_scope_stack:
             if arr[0] == name:
-                return arr
+                if self.check_scope_definitions(arr[1]):
+                    return arr
+                else:
+                    print("'%s' is not defined" % arr[0])
+        print("'%s' is not defined" % name)
         return None
 
     def search_var_scope_stack(self, name):
         for var in self.var_scope_stack:
             if var[0] == name:
-                return var
+                if self.check_scope_definitions(var[1]):
+                    return var
+                else:
+                    print("'%s' is not defined" % var[0])
+                    return None
+        print("'%s' is not defined" % name)
         return None
 
     def search_func_scope_stack(self, name):
         for func in self.func_scope_stack:
             if func[0] == name:
-                return func
+                if self.check_scope_definitions(func[1]):
+                    return func
+                else:
+                    print("function '%s' is not defined" % func[0])
+        print("function '%s' is not defined" % name)
         return None
 
 
@@ -112,7 +141,11 @@ def pid_dec(token_string, token_type, generator):
 
 def var_dec_finish(token_string, token_type, generator):
     semantic_stack = generator.semantic_stack
-    generator.var_scope_stack.append((semantic_stack[-3], semantic_stack[-2], semantic_stack[-4], semantic_stack[-1]))
+    if not semantic_stack[-4] == 'void':
+        generator.var_scope_stack.append(
+            (semantic_stack[-3], semantic_stack[-2], semantic_stack[-4], semantic_stack[-1]))
+    else:
+        print("Illegal type of void!")
     for i in range(4):
         semantic_stack.pop()
     return
@@ -135,8 +168,11 @@ def ptype_void_dec(token_string, token_type, generator):
 def arr_dec_finish(token_string, token_type, generator):
     semantic_stack = generator.semantic_stack
     end = semantic_stack[-2] + 4 * semantic_stack[-1]
-    generator.arr_scope_stack.append(
-        (semantic_stack[-4], semantic_stack[-3], semantic_stack[-5], semantic_stack[-2], end))
+    if not semantic_stack[-5] == 'void':
+        generator.arr_scope_stack.append(
+            (semantic_stack[-4], semantic_stack[-3], semantic_stack[-5], semantic_stack[-2], end))
+    else:
+        print("Illegal type of void!")
     for i in range(5):
         semantic_stack.pop()
 
@@ -267,7 +303,6 @@ def pid_ref(token_string, token_type, generator: CodeGenerator):
 def arr_ref(token_string, token_type, generator: CodeGenerator):
     name = generator.semantic_stack[-2]
     arr = generator.search_arr_scope_stack(name)
-    # TODO: CHECK SCOPE
     address = arr[2]
     if isinstance(generator.semantic_stack[-1], str):
         ss_top = int(generator.semantic_stack[-1][1:])
@@ -447,42 +482,50 @@ def func_call_name(token_string, token_type, generator: CodeGenerator):
 
 
 def swap_name(token_string, token_type, generator: CodeGenerator):
-    name = generator.semantic_stack[-2]
+    name = generator.semantic_stack[-3]
+    num_of_args = generator.semantic_stack[-2]
     arg = generator.semantic_stack[-1]
+    generator.semantic_stack.pop()
     generator.semantic_stack.pop()
     generator.semantic_stack.pop()
     generator.semantic_stack.append(arg)
     generator.semantic_stack.append(name)
+    generator.semantic_stack.append(num_of_args + 1)
 
 
 def call_function(token_string, token_type, generator: CodeGenerator):
+    num_of_args = generator.semantic_stack[-1]
+    generator.semantic_stack.pop()
     func_name = generator.semantic_stack[-1]
     func = generator.search_func_scope_stack(func_name)
     generator.semantic_stack.pop()
-    for i in range(len(func[2]) - 1, -1, -1):
-        addr = func[2][i][1]
-        type = func[2][i][2]
-        if type == 'num':
-            generator.program_block[generator.program_ptr] = \
-                "(%s, %s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
-        elif type == 'array':
-            generator.program_block[generator.program_ptr] = \
-                "(%s, @%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
+    if num_of_args == len(func[2]):
+        for i in range(len(func[2]) - 1, -1, -1):
+            addr = func[2][i][1]
+            type = func[2][i][2]
+            if type == 'num':
+                generator.program_block[generator.program_ptr] = \
+                    "(%s, %s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
+            elif type == 'array':
+                generator.program_block[generator.program_ptr] = \
+                    "(%s, @%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.semantic_stack[-1]), str(addr))
+            generator.program_ptr += 1
+            generator.program_block.append("")
+            generator.semantic_stack.pop()
+        generator.program_block[generator.program_ptr] = \
+            "(%s, #%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.program_ptr + 2), str(func[5]))
         generator.program_ptr += 1
         generator.program_block.append("")
-        generator.semantic_stack.pop()
-    generator.program_block[generator.program_ptr] = \
-        "(%s, #%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.program_ptr + 2), str(func[5]))
-    generator.program_ptr += 1
-    generator.program_block.append("")
-    func_ptr = func[4]
-    generator.program_block[generator.program_ptr] = \
-        "(%s, %d,,)" % (LangFunc.JP.name, func_ptr)
-    generator.program_ptr += 1
-    generator.program_block.append("")
-    result = func[3]
-    if result != LangFunc.VOID.name:
-        generator.semantic_stack.append(result)
+        func_ptr = func[4]
+        generator.program_block[generator.program_ptr] = \
+            "(%s, %d,,)" % (LangFunc.JP.name, func_ptr)
+        generator.program_ptr += 1
+        generator.program_block.append("")
+        result = func[3]
+        if result != LangFunc.VOID.name:
+            generator.semantic_stack.append(result)
+    else:
+        print("Mismatch in numbers of arguments of '%s'" % func_name)
 
 
 def save_main(token_string, token_type, generator: CodeGenerator):
@@ -496,7 +539,51 @@ def save_main(token_string, token_type, generator: CodeGenerator):
     generator.program_block.append("")
 
 
+def is_main(func):
+    correct = True
+    if len(func[1]) != 1 or func[1][0] != 0:
+        correct = False
+    elif len(func[2]) != 0:
+        correct = False
+    return correct
+
+
 def jmp_to_main(token_string, token_type, generator: CodeGenerator):
     func = generator.search_func_scope_stack("main")
-    generator.program_block[0] = "(%s, %d,,)" % (LangFunc.JP.name, func[4])
-    generator.program_block = generator.program_block[:-2]
+    if func is not None:
+        if is_main(func):
+            generator.program_block[0] = "(%s, %d,,)" % (LangFunc.JP.name, func[4])
+        else:
+            print("main function not found")
+    else:
+        print("main function not found")
+
+
+def push_num_of_args(token_string, token_type, generator: CodeGenerator):
+    generator.semantic_stack.append(0)
+
+
+def enter_while(token_string, token_type, generator: CodeGenerator):
+    generator.in_while = True
+
+
+def exit_while(token_string, token_type, generator: CodeGenerator):
+    generator.in_while = False
+
+
+def enter_switch(token_string, token_type, generator: CodeGenerator):
+    generator.in_switch = True
+
+
+def exit_while(token_string, token_type, generator: CodeGenerator):
+    generator.in_switch = False
+
+
+def check_for_while(token_string, token_type, generator: CodeGenerator):
+    if not generator.in_while:
+        print("continue used outside of while")
+
+
+def check_for_while_switch(token_string, token_type, generator: CodeGenerator):
+    if not generator.in_while and not generator.in_switch:
+        print("break used outside of while or switch")
