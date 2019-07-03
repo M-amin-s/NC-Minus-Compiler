@@ -183,9 +183,10 @@ class Node:
 
 
 class Printer:
-    def __init__(self, result_addr, errors_addr):
+    def __init__(self, result_addr, errors_addr, gen_code_addr):
         self.f_result = open(result_addr, "w+")
         self.f_error = open(errors_addr, "w+")
+        self.f_code = open(gen_code_addr, "w+")
 
     def print_error(self, err):
         self.f_error.write(err + "\n")
@@ -199,5 +200,11 @@ class Printer:
         for child in node.childs:
             self.print_tree(child)
 
+    def print_code(self, generator:CodeGenerator):
+        for code in generator.program_block:
+            self.f_code.write(code + "\n")
 
-printer = Printer("../Tests/parser_test/parser_tree.txt", "../Tests/parser_test/errors.txt")
+
+printer = Printer("parser_tree.txt",
+                  "errors.txt",
+                  "intermediate_code.txt")

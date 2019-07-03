@@ -45,7 +45,7 @@ class CodeGenerator:
         # [('a', 500','num','void'), ('b',504','array','int')], 508, 5), ('main',[], [], , ?)] must include ('main',
         # [], [], , ?) otherwise print error: "main function not found"
         # TODO: change fss initialization of output
-        self.func_scope_stack = [('output', [0], [('a', 1000, 'num', LangFunc.INT.name)], LangFunc.VOID.name, 1)]
+        self.func_scope_stack = [('output', [0], [('a', 1000, 'num', LangFunc.INT.name)], LangFunc.VOID.name, 1, 1004)]
 
         # the array of (at most) 4 element pairs which needs to be filled with instructions
         # e.g. program_block=[('ADD', 500, 1000, 508), ('JPF', 512, 6, )]
@@ -61,7 +61,7 @@ class CodeGenerator:
         self.program_ptr = 0
 
         # current address of temporary memory (increment by 4)
-        self.tmp_ptr = 1004
+        self.tmp_ptr = 1008
 
         # shows if program is inside a while loop
         self.in_while = False
@@ -382,16 +382,20 @@ def func_def(token_string, token_type, generator: CodeGenerator):
 
 
 def save_func_begin(token_string, token_type, generator: CodeGenerator):
-    generator.semantic_stack.append(generator.program_ptr)
-    generator.program_ptr += 1
-    generator.program_block.append("")
+    # generator.semantic_stack.append(generator.program_ptr)
+    # generator.program_ptr += 1
+    # generator.program_block.append("")
+    generator.semantic_stack.append(generator.tmp_ptr)
     mend_func = generator.func_scope_stack[-1]
-    generator.func_scope_stack[-1] = (mend_func[0], mend_func[1], mend_func[2], mend_func[3], generator.program_ptr)
+    generator.func_scope_stack[-1] = (mend_func[0], mend_func[1], mend_func[2], mend_func[3], generator.program_ptr, generator.tmp_ptr)
+    generator.tmp_ptr += 4
 
 
 def end_func(token_string, token_type, generator: CodeGenerator):
-    generator.program_block[generator.semantic_stack[-1]] = \
-        "(%s, %d,,)" % (LangFunc.JP.name, generator.program_ptr)
+    generator.program_block[generator.program_ptr] = \
+        "(%s, @%s,,)" % (LangFunc.JP.name, str(generator.semantic_stack[-1]))
+    generator.program_ptr += 1
+    generator.program_block.append("")
     generator.semantic_stack.pop()
 
 
@@ -467,19 +471,27 @@ def call_function(token_string, token_type, generator: CodeGenerator):
         generator.program_ptr += 1
         generator.program_block.append("")
         generator.semantic_stack.pop()
+    generator.program_block[generator.program_ptr] = \
+        "(%s, #%s, %s,)" % (LangFunc.ASSIGN.name, str(generator.program_ptr + 2), str(func[5]))
+    generator.program_ptr += 1
+    generator.program_block.append("")
     func_ptr = func[4]
     generator.program_block[generator.program_ptr] = \
         "(%s, %d,,)" % (LangFunc.JP.name, func_ptr)
     generator.program_ptr += 1
     generator.program_block.append("")
     result = func[3]
-    generator.semantic_stack.append(result)
+    if result != LangFunc.VOID.name:
+        generator.semantic_stack.append(result)
 
 
 def save_main(token_string, token_type, generator: CodeGenerator):
     generator.program_ptr += 1
     generator.program_block.append("")
-    generator.program_block[1] = "(%s, %d,,)"%(LangFunc.PRINT.name, 1000)
+    generator.program_block[1] = "(%s, %d,,)" % (LangFunc.PRINT.name, 1000)
+    generator.program_ptr += 1
+    generator.program_block.append("")
+    generator.program_block[2] = "(%s, @%s,,)" % (LangFunc.JP.name, 1004)
     generator.program_ptr += 1
     generator.program_block.append("")
 
@@ -487,3 +499,4 @@ def save_main(token_string, token_type, generator: CodeGenerator):
 def jmp_to_main(token_string, token_type, generator: CodeGenerator):
     func = generator.search_func_scope_stack("main")
     generator.program_block[0] = "(%s, %d,,)" % (LangFunc.JP.name, func[4])
+    generator.program_block = generator.program_block[:-2]
