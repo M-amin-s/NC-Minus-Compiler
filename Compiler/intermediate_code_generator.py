@@ -563,7 +563,7 @@ def enter_switch(token_string, token_type, generator: CodeGenerator):
     generator.in_switch = True
 
 
-def exit_while(token_string, token_type, generator: CodeGenerator):
+def exit_switch(token_string, token_type, generator: CodeGenerator):
     generator.in_switch = False
 
 
