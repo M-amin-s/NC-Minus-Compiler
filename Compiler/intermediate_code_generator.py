@@ -167,7 +167,9 @@ def ptype_void_dec(token_string, token_type, generator):
 
 def arr_dec_finish(token_string, token_type, generator):
     semantic_stack = generator.semantic_stack
-    end = semantic_stack[-2] + 4 * semantic_stack[-1]
+    if isinstance(semantic_stack[-1], str):
+        ss_top = int(semantic_stack[-1][1:])
+    end = semantic_stack[-2] + 4 * ss_top
     if not semantic_stack[-5] == 'void':
         generator.arr_scope_stack.append(
             (semantic_stack[-4], semantic_stack[-3], semantic_stack[-5], semantic_stack[-2], end))
@@ -303,10 +305,10 @@ def pid_ref(token_string, token_type, generator: CodeGenerator):
 def arr_ref(token_string, token_type, generator: CodeGenerator):
     name = generator.semantic_stack[-2]
     arr = generator.search_arr_scope_stack(name)
-    address = arr[2]
+    address = arr[3]
     if isinstance(generator.semantic_stack[-1], str):
         ss_top = int(generator.semantic_stack[-1][1:])
-    element_addr = 4 * generator.semantic_stack[-1] + address
+    element_addr = 4 * ss_top + address
     generator.semantic_stack.pop()
     generator.semantic_stack.pop()
     generator.semantic_stack.append(element_addr)
