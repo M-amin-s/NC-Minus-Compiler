@@ -553,6 +553,7 @@ def jmp_to_main(token_string, token_type, generator: CodeGenerator):
     if func is not None:
         if is_main(func):
             generator.program_block[0] = "(%s, %d,,)" % (LangFunc.JP.name, func[4])
+            generator.program_block = generator.program_block[:-2]
         else:
             print("main function not found")
     else:
