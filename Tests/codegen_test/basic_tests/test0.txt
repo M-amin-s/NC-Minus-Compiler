@@ -1,4 +1,4 @@
-int x;
-x = 109;
+void main(void){
 int y[2];
-y[1] = 23;
+y[1] = 50;
+}
