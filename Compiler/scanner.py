@@ -210,7 +210,7 @@ def write_token_in_file(write_token_type, write_string):
 
 types = ["NOT A TYPE", "NUM", "ID", "KEYWORD", "SYMBOL", "COMMENT", "WHITESPACE"]
 primaries = [7, 4, 5, 2, 3, 1, 6]
-path_result_scanner = "../Tests/parser_test/scanner.txt"
+path_result_scanner = "scanner.txt"
 f_out_results = None
 f_out_errors = None
 
@@ -219,7 +219,7 @@ def scan():
     global f_out_results, f_out_errors
     f_out_results = open(path_result_scanner, "w+")
     f_out_errors = open("../Tests/parser_test/errors.txt", "a+")
-    with open("../Tests/codegen_test/basic_tests/test0.txt") as f:
+    with open("../Tests/codegen_test/basic_tests/test14.txt") as f:
         start_char = ''
         token_type = 0
         last_token_type = 0
@@ -246,4 +246,3 @@ def scan():
 
 def scan_errors():
     scan()
-    # os.remove(path_result_scanner)

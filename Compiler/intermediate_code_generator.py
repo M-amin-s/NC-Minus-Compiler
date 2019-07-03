@@ -453,7 +453,7 @@ def pid_param_def(token_string, token_type, generator: CodeGenerator):
 def array_param_def(token_string, token_type, generator: CodeGenerator):
     ss = generator.semantic_stack
     generator.func_scope_stack[-1][2].append((ss[-3], ss[-1], 'array', ss[-4]))
-    generator.arr_scope_stack.append((ss[-3], ss[-2], ss[-1], ss[-4],))
+    generator.arr_scope_stack.append((ss[-3], ss[-2], ss[-4], ss[-1],))
     for i in range(4):
         ss.pop()
 

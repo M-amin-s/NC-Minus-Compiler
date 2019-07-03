@@ -1,10 +1,12 @@
 
 
 int example (int a[]){
-    return b[1];
+    return a[1];
 }
 
 void main(void) {
-int z;
-z = 5;
+    int x;
+    int z[10];
+    z[1] = 5;
+    x = example(z);
 }
