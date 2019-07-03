@@ -1,9 +1,10 @@
 
 
-int add (int a, int b) {
-    return a + b;
+int example (int a[]){
+    return b[1];
 }
 
-int example (int a[]){
-    return a[1];
+void main(void) {
+int z;
+z = 5;
 }
