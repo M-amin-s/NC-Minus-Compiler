@@ -1,7 +1,7 @@
 from Compiler.parser_make_data import *
 from Compiler.scanner import get_next_token, TokenType, scan_errors
 
-with open("../Tests/codegen_test/basic_tests/test3.txt") as f:
+with open("../Tests/codegen_test/basic_tests/test0.txt") as f:
     eof = False
     start_char = ''
     # token_string, token_type, start_char, eof = get_next_token(f, start_char)

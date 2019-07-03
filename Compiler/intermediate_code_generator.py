@@ -306,7 +306,7 @@ def arr_ref(token_string, token_type, generator: CodeGenerator):
     address = arr[2]
     if isinstance(generator.semantic_stack[-1], str):
         ss_top = int(generator.semantic_stack[-1][1:])
-    element_addr = 4 * ss_top + address
+    element_addr = 4 * generator.semantic_stack[-1] + address
     generator.semantic_stack.pop()
     generator.semantic_stack.pop()
     generator.semantic_stack.append(element_addr)
